@@ -1,2 +1,2 @@
-# academy-spring-profile-app
-profile-app
+# アカデミーの課題：個人課題-プロフィールアプリの作成
+学習記録の保存が可能なWebアプリケーション
