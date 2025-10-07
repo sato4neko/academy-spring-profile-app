@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+>
+  <head
+    th:replace="~{/common/head :: head_fragment(title = '共通レイアウト', scripts = ~{::script}, links = ~{::link})}"
+  ></head>
+  <body>
+    <header th:replace="~{/common/header :: header}"></header>
+    <main th:insert="~{::content}"></main>
+    <footer th:replace="~{/common/footer :: footer}"></footer>
+  </body>
+</html>

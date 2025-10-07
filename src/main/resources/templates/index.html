@@ -1,17 +1,12 @@
 <!DOCTYPE html>
-<html lang="ja">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" />
-    <title>Top page</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-      crossorigin="anonymous"
-    />
-  </head>
-  <body class="container">
-    <h1 class="display-4">Hello page</h1>
-    <p class="msg">this is sample page</p>
-  </body>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity-3"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}"
+>
+  <section class="container" th:fragment="content">
+    <h1 class="display-4 mb-4" th:text="${title}"></h1>
+    <p th:text="${msg}"></p>
+  </section>
 </html>

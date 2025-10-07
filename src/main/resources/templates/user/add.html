@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity-3"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}"
+>
+  <section class="p-user_add" th:fragment="content">
+      <h1 class="title">新規登録</h1>
+      <form
+        th:action="@{/user/create}"
+        th:object="${userRequest}"
+        th:method="post"
+      >
+        <table class="add_form mx-auto text-start">
+          <tr>
+            <th>氏名</th>
+              <td
+              th:if="${validationError}" 
+              th:errors="*{name}"
+              th:text="name"
+              style="color: red;border: none;font-size:1.0rem;margin: 0;"
+            ></td>
+            <td><input type="text" th:field="*{name}" /></td>
+          </tr>
+          <tr class="u-mb-40">
+            <th>メールアドレス</th>
+            <td
+              th:if="${validationError}" 
+              th:errors="*{email}"
+              th:text="email"
+              style="color: red;border: none;font-size:1.0rem;margin: 0;"
+            ></td>
+            <td><input type="text" th:field="*{email}" /></td>
+          </tr>
+          <tr>
+            <th>パスワード</th>
+            <td
+              th:if="${validationError}" 
+              th:errors="*{password}"
+              th:text="password"
+              style="color: red;border: none;font-size:1.0rem;margin: 0;"
+            ></td>
+            <td><input type="text" th:field="*{password}" /></td>
+          </tr>
+        </table>
+        <input class="add_btn" type="submit" value="登録する"></input>
+      </form>
+  </section>
+</html>
