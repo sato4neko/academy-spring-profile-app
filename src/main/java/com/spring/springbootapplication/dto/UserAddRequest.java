@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class UserRequest implements Serializable{
+public class UserAddRequest implements Serializable{
     
     //名前
     @NotEmpty(message="名前は必ず入力してください")
@@ -25,5 +25,5 @@ public class UserRequest implements Serializable{
     //パスワード
     @NotEmpty(message="パスワードは必ず入力してください")
     @Pattern(regexp = "^(?=.*?[a-zA-Z])(?=.*?\\d)[a-zA-Z\\d]{8,}$",message = "英数字8文字以上で入力してください")
-    private String password;
+    private String passwordDigest;
 }

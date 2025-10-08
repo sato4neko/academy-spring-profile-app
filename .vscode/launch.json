@@ -6,6 +6,13 @@
       "name": "SpringbootApplication",
       "request": "launch",
       "mainClass": "com.spring.springbootapplication.SpringbootApplication",
+      "projectName": "springboot-application-academy-spring-profile-app"
+    },
+    {
+      "type": "java",
+      "name": "SpringbootApplication",
+      "request": "launch",
+      "mainClass": "com.spring.springbootapplication.SpringbootApplication",
       "projectName": "academy-spring-profile-app"
     },
     {

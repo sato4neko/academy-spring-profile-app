@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity-3"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}"
+>
+  <section class="container" th:fragment="content">
+    <h1 class="display-4 mb-4" th:text="${title}"></h1>
+    <p th:text="${msg}"></p>
+  </section>
+</html>

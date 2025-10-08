@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity-3"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}"
+>
+  <section class="container text-start" th:fragment="content">
+    <h1>ユーザー情報</h1>
+    <div class="float-end">
+      <a th:href="@{/user/add}" class="btn btn-primary">新規登録はこちら</a>
+    </div>
+    <div th:if="${userlist}">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>名前</th>
+            <th>メールアドレス</th>
+            <th>更新日時</th>
+            <th>登録日時</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            th:each="user : ${userlist}"
+            th:object="${user}"
+            class="align-middle"
+          >
+            <td th:text="*{id}"></td>
+            <td th:text="*{name}"></td>
+            <td th:text="*{email}"></td>
+            <td th:text="${#dates.format(user.updatedAt, 'yyyy/MM/dd')}"></td>
+            <td th:text="${#dates.format(user.createdAt, 'yyyy/MM/dd')}"></td>
+            <!--<td>
+              <a th:href="@{/user/{id}/edit(id=*{id})}" class="btn btn-primary"
+                >編集</a
+              >
+            </td>-->
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</html>
