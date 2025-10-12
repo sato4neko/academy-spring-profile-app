@@ -1,0 +1,19 @@
+@charset "utf-8";
+
+/***
+ Topページ
+***/
+
+.p-profile-app_top .title {
+  font-size: var(--fs-1);
+  margin-bottom: 80px;
+}
+.p-profile-app_top .inner {
+  margin-inline: auto;
+  width: 480px;
+}
+
+.p-profile-app_top .text {
+  font-size: var(--fs-5);
+  margin-bottom: 48px;
+}

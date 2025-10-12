@@ -5,7 +5,19 @@
   layout:decorate="~{layout/layout}"
 >
   <header xmlns:th="http://www.thymeleaf.org" th:fragment="header" id="header">
-    <h1>My Portfolio</h1>
-    <button class="login_btn" type="submit">ログイン</button>
+    <div class="inner" th:classappend="${loginPage} ? 'is-login-page'">
+      <h1>My Portfolio</h1>
+      <div th:if="${showHeaderButtons == null or showHeaderButtons}">
+        <a
+          class="c-btn--md--loggedIn"
+          th:href="@{/logout}"
+          th:if="${isLoggedIn}"
+          >ログアウト</a
+        >
+        <a th:href="@{/login}" th:unless="${isLoggedIn}" class="c-btn--md"
+          >ログイン</a
+        >
+      </div>
+    </div>
   </header>
 </html>

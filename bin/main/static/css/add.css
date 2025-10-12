@@ -4,34 +4,24 @@
     新規ユーザー登録画面
 **/
 
-.p-user_add .title {
+.p-profile-app_user_add .title {
   font-size: var(--fs-1);
   margin-bottom: 80px;
 }
-.p-user_add .add_form {
-  width: 480px;
-}
-.p-user_add .add_form th,
-.p-user_add .add_form td {
+.p-profile-app_user_add th,
+.p-profile-app_user_add td {
   display: block;
 }
-.p-user_add .add_form th {
+.p-profile-app_user_add th {
   opacity: 0.5;
-  font-size: var(--fs-6);
+  font-size: var(--fs-5);
 }
-.p-user_add .add_form td {
-  border-bottom: 1px solid var(--black-color);
-  font-size: var(--fs-3);
+.p-profile-app_user_add td {
   margin-bottom: 48px;
 }
-.p-user_add .add_form input {
+.p-profile-app_user_add .input_form {
+  border: none;
+  border-bottom: 1px solid var(--black-color);
+  font-size: var(--fs-4);
   width: 100%;
-}
-
-.p-user_add .add_btn {
-  padding: 16px 80px;
-  border-radius: 4px;
-  background-color: var(--primary-color);
-  font-size: var(--fs-3);
-  color: var(--white-color);
 }

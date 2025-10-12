@@ -1,0 +1,31 @@
+@charset "utf-8";
+
+/***
+    ユーザーログイン画面
+**/
+
+.p-user_login .title {
+  font-size: var(--fs-1);
+  margin-bottom: 80px;
+}
+.p-user_login .login_item {
+  opacity: 0.54;
+  font-size: var(--fs-5);
+}
+.p-user_login .login_form {
+  border: none;
+  border-bottom: 1px solid var(--black-color);
+  margin-bottom: 48px;
+  font-size: var(--fs-4);
+}
+.p-user_login .inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.p-user_login .login_btn {
+  margin-bottom: 48px;
+}
+.p-user_login .register_btn {
+  display: inline-block;
+}

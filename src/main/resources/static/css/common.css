@@ -14,6 +14,10 @@ body {
   font-size: 1.6rem;
   text-align: center;
 }
+a {
+  text-decoration: none;
+  color: var(--font-color);
+}
 a:hover {
   opacity: 0.5;
 }
@@ -35,10 +39,45 @@ a:hover {
   /*font-weight*/
   --fw-b: bold;
 }
-
+h1 {
+  margin: 0;
+}
+.btn--loggedIn {
+  width: 170px;
+}
 /*Utility*/
 
 /*Component*/
+.c-form {
+  width: 480px;
+}
+.c-btn--md {
+  background-color: var(--white-color);
+  border-radius: 4px;
+  width: 152px;
+  padding: 16px 40px;
+  font-size: var(--fs-3);
+  color: var(--font-color);
+  text-align: center;
+}
+.c-btn--lg {
+  width: 268px;
+  padding: 16px 80px;
+  border-radius: 4px;
+  background-color: var(--primary-color);
+  font-size: var(--fs-3);
+  color: var(--white-color);
+  text-align: center;
+}
+.c-btn--md--loggedIn {
+  background-color: var(--white-color);
+  border-radius: 4px;
+  width: 170px;
+  padding: 16px 40px;
+  font-size: var(--fs-3);
+  color: var(--font-color);
+  text-align: center;
+}
 
 /***
  header
@@ -47,24 +86,29 @@ a:hover {
   background-color: var(--primary-color);
   color: var(--white-color);
   height: 120px;
-  padding: 0 40px;
   margin-bottom: 80px;
+}
+#header .inner {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
+  height: inherit;
+  padding: 0 40px;
 }
 
 #header h1 {
-  font-size: var(--fs-1);
-  font-weight: bold;
-  margin: 0;
+  color: var(--white-color);
 }
-.login_btn {
-  background-color: var(--white-color);
-  border-radius: 4px;
-  width: 152px;
-  height: 53px;
-  color: var(--font-color);
+
+/**ログインページ用のheader**/
+.is-login-page {
+  justify-content: center;
+}
+
+.is-login-page h1 {
+  text-align: center;
+  width: 100%;
 }
 
 /***

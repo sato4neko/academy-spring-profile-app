@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity-3"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}"
+>
+  <section class="p-user_login" th:fragment="content">
+    <h1 class="title">ログイン</h1>
+    <form class="c-form mx-auto text-start" th:action="@{/login}" method="post">
+      <!--メールアドレス-->
+      <label class="login_item">ユーザー名</label>
+      <input type="text" name="username" class="form-control login_form" />
+
+      <!--パスワード-->
+      <label class="login_item">パスワード</label>
+      <input type="password" name="password" class="form-control login_form" />
+
+      <div class="inner">
+        <!--ログインボタン-->
+        <input type="submit" value="ログインする" class="login_btn c-btn--lg" />
+
+        <!--ユーザー新規登録ボタン-->
+        <a th:href="@{/user/add}" class="register_btn c-btn--lg"
+          >新規登録する</a
+        >
+      </div>
+    </form>
+  </section>
+</html>

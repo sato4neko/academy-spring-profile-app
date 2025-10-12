@@ -5,14 +5,15 @@
   xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
   layout:decorate="~{layout/layout}"
 >
-  <section class="p-user_add" th:fragment="content">
+  <section class="p-profile-app_user_add" th:fragment="content">
     <h1 class="title">新規登録</h1>
     <form
       th:action="@{/user/create}"
       th:object="${userAddRequest}"
       th:method="post"
     >
-      <table class="add_form mx-auto text-start">
+      <table class="c-form mx-auto text-start">
+        <!--氏名-->
         <tr>
           <th>氏名</th>
           <td
@@ -22,8 +23,15 @@
           >
             <span></span>
           </td>
-          <td><input type="text" th:field="*{name}" /></td>
+          <td>
+            <input
+              class="form-control input_form"
+              type="text"
+              th:field="*{name}"
+            />
+          </td>
         </tr>
+        <!--メールアドレス-->
         <tr class="u-mb-40">
           <th>メールアドレス</th>
           <td
@@ -33,8 +41,15 @@
           >
             <span></span>
           </td>
-          <td><input type="text" th:field="*{email}" /></td>
+          <td>
+            <input
+              class="form-control input_form"
+              type="text"
+              th:field="*{email}"
+            />
+          </td>
         </tr>
+        <!--パスワード-->
         <tr>
           <th>パスワード</th>
           <td
@@ -44,10 +59,17 @@
           >
             <span></span>
           </td>
-          <td><input type="text" th:field="*{passwordDigest}" /></td>
+          <td>
+            <input
+              class="form-control input_form"
+              type="text"
+              th:field="*{passwordDigest}"
+            />
+          </td>
         </tr>
       </table>
-      <input class="add_btn" type="submit" value="登録する" />
+      <!--登録ボタン-->
+      <input class="c-btn--lg" type="submit" value="登録する" />
     </form>
   </section>
 </html>

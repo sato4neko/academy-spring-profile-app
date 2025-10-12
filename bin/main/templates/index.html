@@ -5,8 +5,13 @@
   xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
   layout:decorate="~{layout/layout}"
 >
-  <section class="container" th:fragment="content">
-    <h1 class="display-4 mb-4" th:text="${title}"></h1>
-    <p th:text="${msg}"></p>
+  <section class="p-profile-app_top" th:fragment="content">
+    <h1 class="title" th:text="${title}"></h1>
+    <div class="inner">
+      <p class="text" th:text="${msg}"></p>
+      <p class="text" th:if="${isLoggedIn}">
+        <span th:text="${username}" th:if="${isLoggedIn}"></span>さん
+      </p>
+    </div>
   </section>
 </html>

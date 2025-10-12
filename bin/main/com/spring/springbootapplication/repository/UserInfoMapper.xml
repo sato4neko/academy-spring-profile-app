@@ -4,23 +4,23 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.spring.springbootapplication.repository.UserInfoMapper">
 
-    <!-- 全件検索 -->
-    <select id="findAll" resultType="com.spring.springbootapplication.entity.UserInfo">
-        SELECT * FROM users 
-    </select>
+    <resultMap id="UserInfoResultMap" type="com.spring.springbootapplication.entity.UserInfo">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="email" property="email"/>
+        <result column="password_digest" property="passwordDigest"/> 
+        <result column="image" property="image"/>
+        <result column="profile_detail" property="profileDetail"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
 
-    <!-- 主キー検索 -->
-    <select id="findById" resultType="com.spring.springbootapplication.entity.UserInfo">
-        SELECT * FROM users WHERE id=#{id} 
-    </select>
-
-    <!-- 条件指定検索 -->
-    <select id="search" resultType="com.spring.springbootapplication.entity.UserInfo">
+    <select id="search" resultMap="UserInfoResultMap">
         SELECT
             *
         FROM
             users
-        WHERE
+        WHERE 1 = 1
             <if test="id != null and id != ''">
                 AND id = #{id}
             </if>
@@ -29,20 +29,27 @@
             </if>
     </select>
 
-    <!-- 新規登録 -->
+    <select id="findByName" resultMap="UserInfoResultMap">
+        SELECT 
+            id, 
+            name, 
+            email, 
+            password_digest, 
+            image, 
+            profile_detail, 
+            updated_at, 
+            created_at
+        FROM 
+            users
+        WHERE 
+            name = #{name}
+    </select>
+
     <insert id="save">
         INSERT INTO users
             (name, email, password_digest, updated_at, created_at)
         VALUES
             (#{name}, #{email}, #{passwordDigest}, CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP)
     </insert>
-
-    <!-- 更新 
-    <update id="update">
-        UPDATE users SET name = #{name}, email = #{email}, 
-        <if test="passwordDigest != null and passwordDigest != ''">
-            password_digest = #{passwordDigest},
-        </if>#{image}, #{profileDetail}, updated_at = CURRENT_TIMESTAMP WHERE id = #{id}
-    </update>-->
 
 </mapper>

@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.spring.springbootapplication.dto.UserAddRequest;
-import com.spring.springbootapplication.entity.UserInfo;
 import com.spring.springbootapplication.service.UserInfoService;
 
 @Controller
@@ -27,14 +26,6 @@ public class UserInfoController {
     //ユーザー情報 Service
     @Autowired
     private UserInfoService userInfoService;
-
-    //ユーザー情報の一覧画面の表示
-    @GetMapping(value = "/user/list")
-    public String displayList(Model model) {
-        List<UserInfo> userList = userInfoService.findAll();
-        model.addAttribute("userlist", userList);
-        return "user/list";
-    }
 
     //ユーザー新規登録画面を表示
     @GetMapping(value = "/user/add")
@@ -57,6 +48,6 @@ public class UserInfoController {
         }
         //ユーザー登録
         userInfoService.save(userRequest);
-        return "redirect:/user/list";
+        return "redirect:/";
     }
 }
