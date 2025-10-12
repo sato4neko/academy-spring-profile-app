@@ -9,30 +9,33 @@ import lombok.Data;
  * ユーザー情報 Entity
  */
 @Data
-public class UserInfo implements Serializable{
+public class UserInfo implements Serializable {
 
-//ID
-private Long id;
+    //ID
+    private Long id;
 
-//名前
-private String name;
+    //名前
+    private String name;
 
-//メールアドレス
-private String email;
+    //メールアドレス
+    private String email;
 
-// パスワードダイジェスト
-private String passwordDigest;
+    // パスワードダイジェスト
+    private String passwordDigest;
 
-//画像ファイルのパスやURL
-private String image;
+    //画像ファイルのパスやURL
+    private String image;
 
-//自己紹介などの詳細情報
-private String profileDetail;
+    //自己紹介などの詳細情報
+    private String profileDetail;
 
-//更新日時
-private Date updatedAt;
+    //更新日時
+    private Date updatedAt;
 
-//登録日時
-private Date createdAt;
+    //登録日時
+    private Date createdAt;
 
+    public String getEmail() {
+        return email;
+    }
 }

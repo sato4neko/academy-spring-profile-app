@@ -39,15 +39,15 @@ public class UserInfoService implements UserDetailsService{
 
     //Spring Security認証メソッド
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserInfo userInfo = userInfoMapper.findByName(username); 
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        UserInfo userInfo = userInfoMapper.findByEmail(email); 
         
         if (Objects.isNull(userInfo)) {
-            throw new UsernameNotFoundException("ユーザーが見つかりません: " + username);
+            throw new UsernameNotFoundException("ユーザーが見つかりません");
         }
 
         return new org.springframework.security.core.userdetails.User(
-                userInfo.getName(),                  
+                userInfo.getEmail(),                  
                 userInfo.getPasswordDigest(),
                 Collections.emptyList()              
         );

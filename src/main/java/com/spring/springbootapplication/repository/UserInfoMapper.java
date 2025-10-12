@@ -24,7 +24,7 @@ public interface UserInfoMapper {
     //ユーザー情報登録
     void save(UserAddRequest userRequest);
 
-    //pring Security認証用
-    UserInfo findByName(@Param("name") String name);
+    //spring Security認証用 UserInfo findByName(@Param("name") String name);
+    UserInfo findByEmail(String email); 
 
 }

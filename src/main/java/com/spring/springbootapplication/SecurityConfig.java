@@ -11,17 +11,21 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-public class  SecurityConfig {
+public class SecurityConfig {
    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http)
             throws Exception {
+        //CSRFの設定
         http.csrf(CsrfConfigurer::disable);
+        //*権限の設定
         http.authorizeHttpRequests(authorize -> {
             authorize.anyRequest().permitAll();
         });
         http.formLogin(form -> {
             form.defaultSuccessUrl("/")
-                    .loginPage("/login");
+                    .loginPage("/login")
+                    .usernameParameter("email")
+                    .permitAll();
         });
         return http.build();
     }

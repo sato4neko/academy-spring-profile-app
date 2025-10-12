@@ -29,7 +29,7 @@
             </if>
     </select>
 
-    <select id="findByName" resultMap="UserInfoResultMap">
+    <select id="findByEmail" resultMap="UserInfoResultMap">
         SELECT 
             id, 
             name, 
@@ -42,7 +42,7 @@
         FROM 
             users
         WHERE 
-            name = #{name}
+            email = #{email}  
     </select>
 
     <insert id="save">
