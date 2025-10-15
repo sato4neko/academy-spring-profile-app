@@ -3,10 +3,8 @@ package com.spring.springbootapplication.repository;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import com.spring.springbootapplication.dto.UserAddRequest;
-
 import com.spring.springbootapplication.entity.UserInfo;
 
 /**
@@ -24,7 +22,10 @@ public interface UserInfoMapper {
     //ユーザー情報登録
     void save(UserAddRequest userRequest);
 
-    //spring Security認証用 UserInfo findByName(@Param("name") String name);
+    //ユーザーネームで検索
+    UserInfo findByName(String name);
+    
+    //spring Security認証用 
     UserInfo findByEmail(String email); 
 
 }

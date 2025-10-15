@@ -18,9 +18,6 @@ a {
   text-decoration: none;
   color: var(--font-color);
 }
-a:hover {
-  opacity: 0.5;
-}
 /*CSS変数*/
 :root {
   /*color*/
@@ -60,6 +57,9 @@ h1 {
   color: var(--font-color);
   text-align: center;
 }
+.c-btn--md:hover {
+  color: var(--font-color);
+}
 .c-btn--lg {
   width: 268px;
   padding: 16px 80px;
@@ -68,6 +68,9 @@ h1 {
   font-size: var(--fs-3);
   color: var(--white-color);
   text-align: center;
+}
+.c-btn--lg:hover {
+  color: var(--white-color);
 }
 .c-btn--md--loggedIn {
   background-color: var(--white-color);
