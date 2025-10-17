@@ -25,3 +25,16 @@
   font-size: var(--fs-4);
   width: 100%;
 }
+.p-profile-app_user_add .hasErrors_validaton--form {
+  margin-bottom: 0;
+}
+.p-profile-app_user_add .hasErrors_validaton--text {
+  color: red;
+  border: none;
+  font-size: 1rem;
+  margin: 0;
+  margin-bottom: 48px;
+}
+.duplicate_msg {
+  color: red;
+}

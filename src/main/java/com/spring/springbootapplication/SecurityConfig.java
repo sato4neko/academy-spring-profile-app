@@ -39,8 +39,7 @@ public class SecurityConfig {
 
             //ユーザー登録・ログイン画面を許可
             authorize.requestMatchers(
-    "/user/add",    // ユーザー登録画面
-                "/user/create", // ユーザー登録処理
+    "/user/add", // ユーザー登録処理
                 "/login", // ログイン画面
                 "/error" //エラー対応
             ).permitAll();

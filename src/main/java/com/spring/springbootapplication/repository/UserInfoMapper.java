@@ -26,6 +26,6 @@ public interface UserInfoMapper {
     UserInfo findByName(String name);
     
     //spring Security認証用 
-    UserInfo findByEmail(String email); 
-
+    UserInfo findByEmail(String email);
+    
 }

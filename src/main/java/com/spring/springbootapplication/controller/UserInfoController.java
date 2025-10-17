@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.spring.springbootapplication.dto.UserAddRequest;
+import com.spring.springbootapplication.form.GroupOrder;
+import com.spring.springbootapplication.service.DuplicateUserException;
 import com.spring.springbootapplication.service.UserInfoService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,8 +30,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-
 @Controller
+@SessionAttributes(types = UserAddRequest.class)
 public class UserInfoController {
 
     //ユーザー情報 Service
@@ -43,36 +46,49 @@ public class UserInfoController {
     }
 
     //ユーザー情報の新規登録
-    @RequestMapping(value="/user/create", method=RequestMethod.POST)
-    public String create(@Validated @ModelAttribute UserAddRequest userRequest, BindingResult result, Model model,HttpServletRequest request) {
-        //エラーチェック
+    @RequestMapping(value="/user/add", method=RequestMethod.POST)
+    public String create(@Validated(GroupOrder.class) @ModelAttribute UserAddRequest userRequest, BindingResult result, Model model,HttpServletRequest request) {
         if (result.hasErrors()) {
-            List<String> errorList = new ArrayList<String>();
-            for (ObjectError error : result.getAllErrors()) {
-                errorList.add(error.getDefaultMessage());
-            }
-            model.addAttribute("validationError", errorList);
-            return "user/add";
+        List<String> errorList = new ArrayList<String>();
+        for (ObjectError error : result.getAllErrors()) {
+            errorList.add(error.getDefaultMessage());
         }
+        model.addAttribute("validationError", errorList);
+        return "user/add";
+    }
+
+    try {
         //ユーザー登録
         userInfoService.save(userRequest);
-        try {
-            UserDetails userDetails = userInfoService.loadUserByUsername(userRequest.getEmail());
-            Authentication authentication = new UsernamePasswordAuthenticationToken(
-            userDetails, 
-            null, // 認証後はnullでOK
-            userDetails.getAuthorities()
-        );
+        UserDetails userDetails = userInfoService.loadUserByUsername(userRequest.getEmail());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+            userDetails,
+            null,
+            userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        // ★ セッションに認証情報を保存 ★
+
+        //セッションに認証情報を保存
         request.getSession(true).setAttribute(
-            org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, 
-            SecurityContextHolder.getContext()
-        );
-        }catch(Exception e){
-            System.err.println("自動ログイン失敗: " + e.getMessage());
-            return "redirect:/login?error"; 
+            org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+            SecurityContextHolder.getContext());
+
+        } catch (DuplicateUserException e) {
+
+            //重複の処理
+            if (e.getMessage().contains("ユーザー名"))  {
+                result.rejectValue("name", "Duplicate.userAddRequest.name", e.getMessage());
+            } else if (e.getMessage().contains("メールアドレス")){
+                result.rejectValue("email", "Duplicate.userAddRequest.email", e.getMessage());
+            } else {
+                result.reject("General.duplicateError", e.getMessage());
+            }
+            return "user/add";
+            
+        } catch (Exception e) {
+            //ログイン失敗時
+            return "redirect:/login?error";
         }
-        return "redirect:/";
-    }
+            //ログイン成功時
+            return "redirect:/";
+     }
 }
