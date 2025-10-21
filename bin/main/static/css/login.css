@@ -12,12 +12,16 @@
   opacity: 0.54;
   font-size: var(--fs-5);
 }
+
+/* ユーザー登録機能の追加：border-radius 0% を追加 */
 .p-user_login .login_form {
+  border-radius: 0%;
   border: none;
   border-bottom: 1px solid var(--black-color);
   margin-bottom: 48px;
   font-size: var(--fs-4);
 }
+
 .p-user_login .inner {
   display: flex;
   flex-direction: column;

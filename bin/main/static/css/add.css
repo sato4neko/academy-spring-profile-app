@@ -19,12 +19,16 @@
 .p-profile-app_user_add td {
   margin-bottom: 48px;
 }
+
+/* ユーザー登録機能追加：border-radius 0% を修正*/
 .p-profile-app_user_add .input_form {
+  border-radius: 0%;
   border: none;
   border-bottom: 1px solid var(--black-color);
   font-size: var(--fs-4);
   width: 100%;
 }
+
 .p-profile-app_user_add .hasErrors_validaton--form {
   margin-bottom: 0;
 }
