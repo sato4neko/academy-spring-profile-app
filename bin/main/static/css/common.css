@@ -96,6 +96,9 @@ img {
   color: var(--font-color);
   text-align: center;
 }
+.c-btn--md--loggedIn:hover {
+  color: var(--font-color);
+}
 
 /***
  header
