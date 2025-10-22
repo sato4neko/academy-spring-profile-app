@@ -8,7 +8,7 @@
   <section class="p-profile-app_user_add" th:fragment="content">
     <h1 class="title">新規登録</h1>
     <form
-      th:action="@{/user/create}"
+      th:action="@{/user/add}"
       th:object="${userAddRequest}"
       th:method="post"
     >
@@ -17,54 +17,60 @@
         <tr>
           <th>氏名</th>
           <td
-            th:if="${#fields.hasErrors('name')}"
-            th:errors="*{name}"
-            style="color: red; border: none; font-size: 1rem; margin: 0"
+            th:classappend="${#fields.hasErrors('name')} ? 'hasErrors_validaton--form'"
           >
-            <span></span>
-          </td>
-          <td>
             <input
               class="form-control input_form"
               type="text"
               th:field="*{name}"
             />
           </td>
+          <td
+            th:if="${#fields.hasErrors('name')}"
+            th:classappend="${#fields.hasErrors('name')} ? 'hasErrors_validaton--text'"
+            th:errors="*{name}"
+          >
+            <span></span>
+          </td>
         </tr>
         <!--メールアドレス-->
         <tr class="u-mb-40">
           <th>メールアドレス</th>
           <td
-            th:if="${#fields.hasErrors('email')}"
-            th:errors="*{email}"
-            style="color: red; border: none; font-size: 1rem; margin: 0"
+            th:classappend="${#fields.hasErrors('email')} ? 'hasErrors_validaton--form'"
           >
-            <span></span>
-          </td>
-          <td>
             <input
               class="form-control input_form"
               type="text"
               th:field="*{email}"
             />
           </td>
+          <td
+            th:if="${#fields.hasErrors('email')}"
+            th:classappend="${#fields.hasErrors('email')} ? 'hasErrors_validaton--text'"
+            th:errors="*{email}"
+          >
+            <span></span>
+          </td>
         </tr>
         <!--パスワード-->
         <tr>
           <th>パスワード</th>
           <td
-            th:if="${#fields.hasErrors('passwordDigest')}"
-            th:errors="*{passwordDigest}"
-            style="color: red; border: none; font-size: 1rem; margin: 0"
+            th:classappend="${#fields.hasErrors('passwordDigest')} ? 'hasErrors_validaton--form'"
           >
-            <span></span>
-          </td>
-          <td>
             <input
               class="form-control input_form"
               type="text"
               th:field="*{passwordDigest}"
             />
+          </td>
+          <td
+            th:if="${#fields.hasErrors('passwordDigest')}"
+            th:classappend="${#fields.hasErrors('passwordDigest')} ? 'hasErrors_validaton--text'"
+            th:errors="*{passwordDigest}"
+          >
+            <span></span>
           </td>
         </tr>
       </table>
