@@ -1,0 +1,19 @@
+@charset "utf-8";
+
+/***
+ editページ
+***/
+
+.p-profile-app_edit .title {
+  font-size: var(--fs-1);
+  margin-bottom: 80px;
+}
+.p-profile-app_edit .inner {
+  margin-inline: auto;
+  width: 480px;
+}
+
+.p-profile-app_edit .text {
+  font-size: var(--fs-5);
+  margin-bottom: 48px;
+}

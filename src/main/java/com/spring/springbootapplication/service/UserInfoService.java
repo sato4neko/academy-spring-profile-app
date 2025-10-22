@@ -30,11 +30,18 @@ public class UserInfoService implements UserDetailsService{
     private PasswordEncoder passwordEncoder; 
 
     //ユーザ情報登録
-    public void save(UserAddRequest userAddRequest) {
-      String rawPassword = userAddRequest.getPasswordDigest(); 
-      String hashedPassword = passwordEncoder.encode(rawPassword);
-      userAddRequest.setPasswordDigest(hashedPassword);
-      userInfoMapper.save(userAddRequest);
+    public UserAddRequest save(UserAddRequest userAddRequest) {
+
+        String rawPassword = userAddRequest.getPasswordDigest();
+        // パスワードのハッシュ化
+        String hashedPassword = passwordEncoder.encode(rawPassword);
+        userAddRequest.setPasswordDigest(hashedPassword);
+        //データベースに保存
+        userInfoMapper.save(userAddRequest);
+        //ハッシュ化する前のパスワードをセット
+        userAddRequest.setPasswordDigest(rawPassword);
+        
+        return userAddRequest;
     }
 
     //Spring Security認証メソッド

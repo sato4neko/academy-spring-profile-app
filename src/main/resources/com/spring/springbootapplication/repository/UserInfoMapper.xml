@@ -29,6 +29,22 @@
             </if>
     </select>
 
+    <select id="findByName" resultMap="UserInfoResultMap">
+        SELECT 
+            id, 
+            name, 
+            email, 
+            password_digest, 
+            image, 
+            profile_detail, 
+            updated_at, 
+            created_at
+        FROM 
+            users
+        WHERE 
+            name = #{name}
+    </select>
+
     <select id="findByEmail" resultMap="UserInfoResultMap">
         SELECT 
             id, 

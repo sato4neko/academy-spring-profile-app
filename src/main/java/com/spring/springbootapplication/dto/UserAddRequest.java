@@ -3,7 +3,6 @@ package com.spring.springbootapplication.dto;
 import java.io.Serializable;
 
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -19,7 +18,7 @@ public class UserAddRequest implements Serializable{
 
     //メールアドレス
     @NotEmpty(message="メールアドレスは必ず入力してください")
-    @Email(message="メールアドレスが正しい形式ではありません")
+    @Pattern(regexp ="^[a-zA-Z0-9_+-]+(.[a-zA-Z0-9_+-]+)*@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9].)+[a-zA-Z]{2,}$",message="メールアドレスが正しい形式ではありません")
     private String email;
 
     //パスワード

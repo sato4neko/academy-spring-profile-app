@@ -20,6 +20,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.spring.springbootapplication.dto.UserAddRequest;
 import com.spring.springbootapplication.service.UserInfoService;
 
+import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+
+
 @Controller
 public class UserInfoController {
 
@@ -36,7 +44,7 @@ public class UserInfoController {
 
     //ユーザー情報の新規登録
     @RequestMapping(value="/user/create", method=RequestMethod.POST)
-    public String create(@Validated @ModelAttribute UserAddRequest userRequest, BindingResult result, Model model) {
+    public String create(@Validated @ModelAttribute UserAddRequest userRequest, BindingResult result, Model model,HttpServletRequest request) {
         //エラーチェック
         if (result.hasErrors()) {
             List<String> errorList = new ArrayList<String>();
@@ -48,6 +56,23 @@ public class UserInfoController {
         }
         //ユーザー登録
         userInfoService.save(userRequest);
+        try {
+            UserDetails userDetails = userInfoService.loadUserByUsername(userRequest.getEmail());
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+            userDetails, 
+            null, // 認証後はnullでOK
+            userDetails.getAuthorities()
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        // ★ セッションに認証情報を保存 ★
+        request.getSession(true).setAttribute(
+            org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, 
+            SecurityContextHolder.getContext()
+        );
+        }catch(Exception e){
+            System.err.println("自動ログイン失敗: " + e.getMessage());
+            return "redirect:/login?error"; 
+        }
         return "redirect:/";
     }
 }

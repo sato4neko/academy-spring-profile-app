@@ -35,7 +35,4 @@ public class UserInfo implements Serializable {
     //登録日時
     private Date createdAt;
 
-    public String getEmail() {
-        return email;
-    }
 }
