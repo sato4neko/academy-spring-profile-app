@@ -1,8 +1,8 @@
 @charset "utf-8";
 
 /***
-    ユーザーログイン画面
-**/
+  ユーザーログイン画面
+***/
 
 .p-user_login .title {
   font-size: var(--fs-1);
@@ -31,7 +31,6 @@
   display: inline-block;
 }
 
-/* ログイン機能の追加：border-radius 0% を追加 */
 .p-user_login .alert__detail {
   max-width: 480px;
   margin-inline: auto;

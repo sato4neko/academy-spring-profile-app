@@ -45,12 +45,19 @@ img {
 .btn--loggedIn {
   width: 170px;
 }
-/*Utility*/
+/***
+  Utility
+***/
 
-/*Component*/
+/***
+  Component
+***/
+
 .c-form {
   width: 480px;
 }
+
+/*ログインボタン（右上）*/
 .c-btn--md {
   background-color: var(--white-color);
   border-radius: 4px;
@@ -63,6 +70,22 @@ img {
 .c-btn--md:hover {
   color: var(--font-color);
 }
+
+/*ログアウトボタン*/
+.c-btn--md--loggedIn {
+  background-color: var(--white-color);
+  border-radius: 4px;
+  width: 170px;
+  padding: 16px 40px;
+  font-size: var(--fs-3);
+  color: var(--font-color);
+  text-align: center;
+}
+.c-btn--md--loggedIn:hover {
+  color: var(--font-color);
+}
+
+/*ユーザー登録ページのボタン*/
 .c-btn--lg {
   width: 268px;
   padding: 16px 80px;
@@ -75,6 +98,8 @@ img {
 .c-btn--lg:hover {
   color: var(--white-color);
 }
+
+/*トップページ・自己紹介ボタン*/
 .c-btn--lg--top {
   width: 242px;
   padding: 16px 40px;
@@ -87,17 +112,19 @@ img {
 .c-btn--lg--top:hover {
   color: var(--white-color);
 }
-.c-btn--md--loggedIn {
-  background-color: var(--white-color);
+
+/*トップページ・学習チャートボタン*/
+.c-btn--md--chart {
+  background-color: var(--primary-color);
   border-radius: 4px;
-  width: 170px;
+  width: 152px;
   padding: 16px 40px;
   font-size: var(--fs-3);
-  color: var(--font-color);
+  color: var(--white-color);
   text-align: center;
 }
-.c-btn--md--loggedIn:hover {
-  color: var(--font-color);
+.c-btn--md--chart:hover {
+  color: var(--white-color);
 }
 
 /***
