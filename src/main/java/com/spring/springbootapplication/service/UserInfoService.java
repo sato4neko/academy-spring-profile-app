@@ -69,6 +69,7 @@ private UserInfoMapper userInfoMapper;
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserInfo userInfo = userInfoMapper.findByEmail(email); 
         
+        
         if (Objects.isNull(userInfo)) {
             throw new UsernameNotFoundException("ユーザーが見つかりません");
         }
@@ -76,7 +77,7 @@ private UserInfoMapper userInfoMapper;
         return new org.springframework.security.core.userdetails.User(
                 userInfo.getEmail(),                  
                 userInfo.getPasswordDigest(),
-                Collections.emptyList()              
+                Collections.emptyList()          
         );
     }
 }   

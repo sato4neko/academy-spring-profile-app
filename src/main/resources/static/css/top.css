@@ -4,16 +4,40 @@
  Topページ
 ***/
 
-.p-profile-app_top .title {
-  font-size: var(--fs-1);
-  margin-bottom: 80px;
-}
-.p-profile-app_top .inner {
+.p-profile-app_top .outer {
   margin-inline: auto;
-  width: 480px;
+  max-width: 960px;
+  display: flex;
+  column-gap: 80px;
 }
-
-.p-profile-app_top .text {
-  font-size: var(--fs-5);
-  margin-bottom: 48px;
+.p-profile-app_top .inner--r {
+  max-width: 520px;
+  margin-top: 52px;
+  text-align: left;
+}
+.p-profile-app_top .title {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+  font-size: var(--fs-1);
+  font-weight: bold;
+  padding-bottom: 16px;
+  margin-bottom: 32px;
+}
+.p-profile-app_top .profile_detail {
+  font-size: var(--fs-3);
+  line-height: 1.5;
+  margin-bottom: 32px;
+}
+.p-profile-app_top .link__btn--edit {
+  display: inline-block;
+}
+.p-profile-app_top .inner--l {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.p-profile-app_top .profile_image {
+  margin-bottom: 10px;
+}
+.p-profile-app_top .username {
+  font-size: 2rem;
 }

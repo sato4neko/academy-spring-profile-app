@@ -39,6 +39,9 @@ a {
 h1 {
   margin: 0;
 }
+img {
+  max-width: 100%;
+}
 .btn--loggedIn {
   width: 170px;
 }
@@ -72,6 +75,18 @@ h1 {
 .c-btn--lg:hover {
   color: var(--white-color);
 }
+.c-btn--lg--top {
+  width: 242px;
+  padding: 16px 40px;
+  border-radius: 4px;
+  background-color: var(--primary-color);
+  font-size: var(--fs-3);
+  color: var(--white-color);
+  text-align: center;
+}
+.c-btn--lg--top:hover {
+  color: var(--white-color);
+}
 .c-btn--md--loggedIn {
   background-color: var(--white-color);
   border-radius: 4px;
@@ -80,6 +95,9 @@ h1 {
   font-size: var(--fs-3);
   color: var(--font-color);
   text-align: center;
+}
+.c-btn--md--loggedIn:hover {
+  color: var(--font-color);
 }
 
 /***

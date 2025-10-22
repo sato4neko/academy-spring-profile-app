@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.security.web.SecurityFilterChain;
 
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,12 +24,12 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
     
-   @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http)
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http,CustomAuthenticationFailureHandler failureHandler)
             throws Exception {
         //CSRFの設定
         http.csrf(CsrfConfigurer::disable);
-        //*権限の設定
+        //権限の設定
         http.authorizeHttpRequests(authorize -> {
 
             //静的リソース
@@ -51,7 +52,7 @@ public class SecurityConfig {
                     .loginPage("/login")
                     .loginProcessingUrl("/login")
                     .usernameParameter("email")
-                    .failureUrl("/login?error") 
+                    .failureHandler(failureHandler) //ログイン機能の追加：カスタムハンドラーの追加
                     .permitAll();
         });
         return http.build();

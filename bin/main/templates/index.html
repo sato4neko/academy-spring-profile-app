@@ -6,12 +6,24 @@
   layout:decorate="~{layout/layout}"
 >
   <section class="p-profile-app_top" th:fragment="content">
-    <h1 class="title" th:text="${title}"></h1>
-    <div class="inner">
-      <p class="text" th:text="${msg}"></p>
-      <p class="text" th:if="${isLoggedIn}">
-        <span th:text="${username}" th:if="${isLoggedIn}"></span>さん
-      </p>
+    <div class="outer">
+      <div class="inner--l">
+        <img
+          class="profile_image"
+          th:src="@{/img/round.png}"
+          alt="自己紹介画像"
+        />
+        <p class="username" th:if="${isLoggedIn}">
+          <span th:text="${username}"></span>さん
+        </p>
+      </div>
+      <div class="inner--r">
+        <h1 class="title" th:text="${title}"></h1>
+        <p class="profile_detail" th:text="${profile_detail}"></p>
+        <a href="#" class="link__btn--edit c-btn--lg--top"
+          >自己紹介を編集する</a
+        >
+      </div>
     </div>
   </section>
 </html>

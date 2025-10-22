@@ -6,6 +6,21 @@
   layout:decorate="~{layout/layout}"
 >
   <section class="p-user_login" th:fragment="content">
+    <!-- ログイン機能の追加： エラーメッセージ -->
+    <div
+      th:if="${errorMessage}"
+      class="alert alert-danger alert-dismissible fade show alert__detail"
+      role="alert"
+    >
+      <strong th:text="${errorMessage}"></strong>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+
     <h1 class="title">ログイン</h1>
     <form class="c-form mx-auto text-start" th:action="@{/login}" method="post">
       <!--メールアドレス-->

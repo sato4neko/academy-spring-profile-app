@@ -12,8 +12,6 @@
   opacity: 0.54;
   font-size: var(--fs-5);
 }
-
-/* ユーザー登録機能の追加：border-radius 0% を追加 */
 .p-user_login .login_form {
   border-radius: 0%;
   border: none;
@@ -21,7 +19,6 @@
   margin-bottom: 48px;
   font-size: var(--fs-4);
 }
-
 .p-user_login .inner {
   display: flex;
   flex-direction: column;
@@ -32,4 +29,12 @@
 }
 .p-user_login .register_btn {
   display: inline-block;
+}
+
+/* ログイン機能の追加：border-radius 0% を追加 */
+.p-user_login .alert__detail {
+  max-width: 480px;
+  margin-inline: auto;
+  margin-bottom: 48px;
+  text-align: left;
 }
