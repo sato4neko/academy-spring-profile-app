@@ -9,7 +9,7 @@
   margin-bottom: 80px;
 }
 .p-user_login .login_item {
-  opacity: 0.54;
+  color: rgba(0, 0, 0, 0.54);
   font-size: var(--fs-5);
 }
 .p-user_login .login_form {

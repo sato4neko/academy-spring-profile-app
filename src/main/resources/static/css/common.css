@@ -7,7 +7,7 @@ html {
   font-size: 62.5%; /* 16px * 62.5% = 10px */
 }
 body {
-  color: #333;
+  color: var(--font-color);
   font-family: "Roboto", "游ゴシック体", YuGothic, "游ゴシック", "Yu Gothic",
     "メイリオ", "Arial", sans-serif;
   font-weight: 500;
@@ -23,7 +23,7 @@ a {
   /*color*/
   --primary-color: #1b5678;
   --secondary-color: #ee6969;
-  --font-color: #000;
+  --font-color: rgba(0, 0, 0, 0.75);
   --black-color: #000;
   --white-color: #fff;
   /*font-size*/
@@ -38,6 +38,7 @@ a {
 }
 h1 {
   margin: 0;
+  font-size: var(--fs-1);
 }
 img {
   max-width: 100%;
@@ -70,7 +71,6 @@ img {
 .c-btn--md:hover {
   color: var(--font-color);
 }
-
 /*ログアウトボタン*/
 .c-btn--md--loggedIn {
   background-color: var(--white-color);

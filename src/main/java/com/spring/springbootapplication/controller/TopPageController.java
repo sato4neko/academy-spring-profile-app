@@ -29,7 +29,7 @@ public class TopPageController {
             // ログインユーザー・自己紹介文を取得
             String userProfileDetail = userInfo.getProfileDetail();
             if (userProfileDetail != null && !userProfileDetail.isBlank()) {
-                model.addAttribute("profileDetail", userProfileDetail); // ⬅️ ここで上書きしているはず
+                model.addAttribute("profileDetail", userProfileDetail);
             }
         } else{
             // 未ログインユーザー
