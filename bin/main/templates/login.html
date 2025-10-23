@@ -25,11 +25,21 @@
     <form class="c-form mx-auto text-start" th:action="@{/login}" method="post">
       <!--メールアドレス-->
       <label class="login_item">メールアドレス</label>
-      <input type="text" name="email" class="form-control login_form" />
+      <input
+        type="text"
+        name="email"
+        class="form-control login_form"
+        placeholder="メールアドレスを入力してください"
+      />
 
       <!--パスワード-->
       <label class="login_item">パスワード</label>
-      <input type="password" name="password" class="form-control login_form" />
+      <input
+        type="password"
+        name="password"
+        class="form-control login_form"
+        placeholder="パスワードを入力してください"
+      />
 
       <div class="inner">
         <!--ログインボタン-->

@@ -15,7 +15,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Objects;
-import java.util.Collections;
 
 /**
  * ユーザー情報 Service
@@ -69,15 +68,9 @@ private UserInfoMapper userInfoMapper;
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserInfo userInfo = userInfoMapper.findByEmail(email); 
         
-        
         if (Objects.isNull(userInfo)) {
             throw new UsernameNotFoundException("ユーザーが見つかりません");
         }
-
-        return new org.springframework.security.core.userdetails.User(
-                userInfo.getEmail(),                  
-                userInfo.getPasswordDigest(),
-                Collections.emptyList()          
-        );
+        return userInfo;
     }
 }   

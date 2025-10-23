@@ -25,5 +25,8 @@ services:
       MYSQL_DATABASE: test_table
       MYSQL_USER: admin
       MYSQL_PASSWORD: oasis0903
+      MYSQL_INITDB_SKIP_TZINFO: "1"
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATE: utf8mb4_unicode_ci
     ports:
       - 3307:3306

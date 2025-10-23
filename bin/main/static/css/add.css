@@ -1,7 +1,7 @@
 @charset "utf-8";
 
 /***
-    新規ユーザー登録画面
+  新規ユーザー登録画面
 **/
 
 .p-profile-app_user_add .title {
@@ -13,7 +13,7 @@
   display: block;
 }
 .p-profile-app_user_add th {
-  opacity: 0.5;
+  color: rgba(0, 0, 0, 0.54);
   font-size: var(--fs-5);
 }
 .p-profile-app_user_add td {
