@@ -41,7 +41,9 @@ h1 {
   font-size: var(--fs-1);
 }
 img {
-  max-width: 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .btn--loggedIn {
   width: 170px;
@@ -125,6 +127,46 @@ img {
 }
 .c-btn--md--chart:hover {
   color: var(--white-color);
+}
+
+/*自己紹介編集ページ*/
+.c-btn--lg--edit {
+  background-color: var(--primary-color);
+  border-radius: 4px;
+  width: 322px;
+  padding: 16px 80px;
+  font-size: var(--fs-3);
+  color: var(--white-color);
+  text-align: center;
+}
+.c-btn--lg--edit:hover {
+  color: var(--white-color);
+}
+
+/*自己紹介編集ページ ファイルアップロードボタン*/
+.file-upload-inner {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+.c-btn-file-upload {
+  width: 202px;
+  height: 32px;
+  border: 0;
+  border-radius: 4px;
+  font-size: 1.4rem;
+  color: var(--font-color);
+  text-align: center;
+  background: rgba(0, 0, 0, 0.1);
+}
+.file-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 202px;
+  height: 32px;
+  opacity: 0;
+  cursor: pointer;
 }
 
 /***

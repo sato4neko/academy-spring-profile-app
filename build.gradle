@@ -28,8 +28,11 @@ dependencies {
 	//layout
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.1.0'
 
-	//WebSecurity
+	//Security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	//Security
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 	
 	//validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -40,6 +43,12 @@ dependencies {
 	//mybatis
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
 
+	//AWS
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.1.1'
+
+	//AWS SDK
+	implementation 'software.amazon.awssdk:aws-core'
+	
 	//mysql
 	runtimeOnly 'com.mysql:mysql-connector-j'
 
@@ -52,7 +61,8 @@ dependencies {
 
 	//test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3'
+	testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5'
+	testImplementation 'com.h2database:h2'
 }
 
 tasks.named('test') {

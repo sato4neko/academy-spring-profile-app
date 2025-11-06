@@ -1,25 +1,26 @@
 @charset "utf-8";
 
 /***
-  新規ユーザー登録画面
-**/
+  ユーザー情報の編集
+***/
 
-.p-profile-app_user_add .title {
+.p-profile-app_user_update .title {
   font-size: var(--fs-1);
   margin-bottom: 80px;
 }
-.p-profile-app_user_add th,
-.p-profile-app_user_add td {
+.p-profile-app_user_update th,
+.p-profile-app_user_update td {
   display: block;
 }
-.p-profile-app_user_add th {
+.p-profile-app_user_update th {
   color: rgba(0, 0, 0, 0.54);
   font-size: var(--fs-5);
+  margin-bottom: 7px;
 }
-.p-profile-app_user_add td {
+.p-profile-app_user_update td {
   margin-bottom: 48px;
 }
-.p-profile-app_user_add .input_form {
+.p-profile-app_user_update .text_form {
   border-radius: 0%;
   border: none;
   border-bottom: 1px solid var(--black-color);
@@ -28,16 +29,13 @@
 }
 
 /*validation時のcss*/
-.p-profile-app_user_add .hasErrors_validaton--form {
+.p-profile-app_user_update .hasErrors_validaton--form {
   margin-bottom: 0;
 }
-.p-profile-app_user_add .hasErrors_validaton--text {
+.p-profile-app_user_update .hasErrors_validaton--text {
   color: red;
   border: none;
   font-size: 1rem;
   margin: 0;
   margin-bottom: 48px;
-}
-.duplicate_msg {
-  color: red;
 }

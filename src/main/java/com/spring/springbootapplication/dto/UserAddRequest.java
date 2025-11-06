@@ -14,7 +14,6 @@ import lombok.Data;
 @Data
 public class UserAddRequest implements Serializable{
     
-    /* ユーザー登録機能の追加：名前 → 氏名 に変更 */
     //名前
     @NotEmpty(message="氏名は必ず入力してください",groups = ValidGroup1.class)
     @Size(max=255,message = "氏名は255文字以内で入力してください",groups = ValidGroup2.class)

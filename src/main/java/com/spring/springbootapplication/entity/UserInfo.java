@@ -51,9 +51,22 @@ public class UserInfo implements UserDetails{
         return this.passwordDigest;
     }
     
-    //Spring Security認証：権限（権限が不要な場合は空のリストを返す）
+    //Spring Security認証：権限
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList(); 
+        return Collections.emptyList();
     }
+    
+    //UserDetails メソッド
+    @Override
+    public boolean isAccountNonExpired() { return true; }
+
+    @Override
+    public boolean isAccountNonLocked() { return true; }
+
+    @Override
+    public boolean isCredentialsNonExpired() { return true; }
+
+    @Override
+    public boolean isEnabled() { return true; }
 }

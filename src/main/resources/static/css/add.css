@@ -26,6 +26,8 @@
   font-size: var(--fs-4);
   width: 100%;
 }
+
+/*validation時のcss*/
 .p-profile-app_user_add .hasErrors_validaton--form {
   margin-bottom: 0;
 }

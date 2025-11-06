@@ -35,6 +35,7 @@ public class SecurityConfig {
             //静的リソース
             authorize.requestMatchers(
     "/css/**",
+                "/js/**", 
                 "/images/**"
             ).permitAll();
 
@@ -44,6 +45,10 @@ public class SecurityConfig {
                 "/login", // ログイン画面
                 "/error" //エラー対応
             ).permitAll();
+
+            //編集ページへのアクセス認証
+            authorize.requestMatchers("/user/edit").authenticated();
+
             authorize.anyRequest().authenticated();
             
         });
@@ -52,7 +57,7 @@ public class SecurityConfig {
                     .loginPage("/login")
                     .loginProcessingUrl("/login")
                     .usernameParameter("email")
-                    .failureHandler(failureHandler) //ログイン機能の追加：カスタムハンドラーの追加
+                    .failureHandler(failureHandler)
                     .permitAll();
         });
         return http.build();

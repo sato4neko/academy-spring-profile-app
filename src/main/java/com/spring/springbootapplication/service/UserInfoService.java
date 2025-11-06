@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.spring.springbootapplication.dto.UserAddRequest;
+import com.spring.springbootapplication.dto.UserUpdateRequest;
 import com.spring.springbootapplication.entity.UserInfo;
 import com.spring.springbootapplication.repository.UserInfoMapper;
 
@@ -63,11 +64,22 @@ private UserInfoMapper userInfoMapper;
         return userAddRequest;
     }
 
+    //ユーザー情報主キー検索
+    public UserInfo findById(Long id) {
+        return userInfoMapper.findById(id);
+    }
+
+    //ユーザー情報の更新
+    @Transactional
+    public void update(UserUpdateRequest userUpdateRequest) {
+        userInfoMapper.update(userUpdateRequest);
+    }
+
     //Spring Security認証メソッド
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        UserInfo userInfo = userInfoMapper.findByEmail(email); 
-        
+        UserInfo userInfo = userInfoMapper.findByEmail(email);
+
         if (Objects.isNull(userInfo)) {
             throw new UsernameNotFoundException("ユーザーが見つかりません");
         }
