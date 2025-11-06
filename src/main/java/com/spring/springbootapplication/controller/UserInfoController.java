@@ -153,6 +153,7 @@ public class UserInfoController {
                 errorList.add(error.getDefaultMessage());
             }
             model.addAttribute("validationError", errorList);
+
             return "user/edit";
         }
 

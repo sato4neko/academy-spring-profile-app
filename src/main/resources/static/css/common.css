@@ -168,6 +168,11 @@ img {
   opacity: 0;
   cursor: pointer;
 }
+.file-name-text {
+  margin-left: 10px;
+  font-size: 1.4rem;
+  color: var(--font-color);
+}
 
 /***
  header
