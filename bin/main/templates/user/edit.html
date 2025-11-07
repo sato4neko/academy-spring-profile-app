@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity-3"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}"
+>
+  <section class="p-profile-app_user_update" th:fragment="content">
+    <h1 class="title" th:text="${title}"></h1>
+    <form
+      th:action="@{/user/update}"
+      th:object="${userUpdateRequest}"
+      th:method="post"
+      enctype="multipart/form-data"
+    >
+      <input type="hidden" th:field="*{id}" />
+      <input type="hidden" th:field="*{image}" />
+
+      <table class="c-form mx-auto text-start">
+        <!--自己紹介文-->
+        <tr>
+          <th>自己紹介文</th>
+          <td
+            th:classappend="${#fields.hasErrors('profileDetail')} ? 'hasErrors_validaton--form'"
+          >
+            <textarea
+              class="form-control text_form"
+              rows="5"
+              th:field="*{profileDetail}"
+            ></textarea>
+          </td>
+          <td
+            th:if="${#fields.hasErrors('profileDetail')}"
+            th:classappend="${#fields.hasErrors('profileDetail')} ? 'hasErrors_validaton--text'"
+            th:errors="*{profileDetail}"
+          >
+            <span></span>
+          </td>
+        </tr>
+        <!--ユーザー画像-->
+        <tr>
+          <th>アバター画像</th>
+          <td>
+            <div class="file-upload-inner">
+              <button type="button" class="c-btn-file-upload">
+                画像ファイルを添付する
+              </button>
+              <input
+                class="file-input"
+                id="profile-file"
+                type="file"
+                name="imageFile"
+                accept="images/*"
+              />
+              <span id="file-name" class="file-name"></span>
+            </div>
+          </td>
+        </tr>
+      </table>
+      <!--ユーザー更新情報を確定するボタン-->
+      <input
+        class="c-btn--lg c-btn--lg--edit"
+        type="submit"
+        value="自己紹介を確定する"
+      />
+    </form>
+  </section>
+</html>

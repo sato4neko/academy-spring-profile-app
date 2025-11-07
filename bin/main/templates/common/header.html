@@ -1,20 +1,26 @@
 <!DOCTYPE html>
+
 <html
   xmlns:th="http://www.thymeleaf.org"
   xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
   layout:decorate="~{layout/layout}"
 >
   <header xmlns:th="http://www.thymeleaf.org" th:fragment="header" id="header">
     <div class="inner" th:classappend="${loginPage} ? 'is-login-page'">
       <h1>My Portfolio</h1>
+
       <div th:if="${showHeaderButtons == null or showHeaderButtons}">
-        <a
-          class="c-btn--md--loggedIn"
-          th:href="@{/logout}"
-          th:if="${isLoggedIn}"
-          >ログアウト</a
+        <form
+          sec:authorize="isAuthenticated()"
+          th:action="@{/logout}"
+          method="post"
+          style="display: inline"
         >
-        <a th:href="@{/login}" th:unless="${isLoggedIn}" class="c-btn--md"
+          <button type="submit" class="c-btn--md--loggedIn">ログアウト</button>
+        </form>
+
+        <a sec:authorize="isAnonymous()" th:href="@{/login}" class="c-btn--md"
           >ログイン</a
         >
       </div>

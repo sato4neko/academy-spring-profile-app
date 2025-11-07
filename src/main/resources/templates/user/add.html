@@ -6,7 +6,7 @@
   layout:decorate="~{layout/layout}"
 >
   <section class="p-profile-app_user_add" th:fragment="content">
-    <h1 class="title">新規登録</h1>
+    <h1 class="title" th:text="${title}"></h1>
     <form
       th:action="@{/user/add}"
       th:object="${userAddRequest}"

@@ -29,6 +29,10 @@
             </if>
     </select>
 
+    <select id="findById" resultMap="UserInfoResultMap">
+        SELECT * FROM users WHERE id = #{id}
+    </select>
+
     <select id="findByName" resultMap="UserInfoResultMap">
         SELECT 
             id, 
@@ -67,5 +71,9 @@
         VALUES
             (#{name}, #{email}, #{passwordDigest}, CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP)
     </insert>
+
+    <update id="update">
+        UPDATE users SET image = #{image}, profile_detail = #{profileDetail} WHERE id = #{id}
+    </update>
 
 </mapper>
