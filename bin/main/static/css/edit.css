@@ -39,3 +39,24 @@
   margin: 0;
   margin-bottom: 48px;
 }
+
+/*ファイルアップロードボタン*/
+.file-upload-inner {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+.file-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 202px;
+  height: 32px;
+  opacity: 0;
+  cursor: pointer;
+}
+.file-name {
+  margin-left: 20px;
+  font-size: 1.4rem;
+  color: var(--font-color);
+}

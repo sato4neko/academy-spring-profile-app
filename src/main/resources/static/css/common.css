@@ -143,12 +143,8 @@ img {
   color: var(--white-color);
 }
 
-/*自己紹介編集ページ ファイルアップロードボタン*/
-.file-upload-inner {
-  position: relative;
-  display: inline-block;
-  overflow: hidden;
-}
+/*自己紹介編集ページ*/
+
 .c-btn-file-upload {
   width: 202px;
   height: 32px;
@@ -158,20 +154,6 @@ img {
   color: var(--font-color);
   text-align: center;
   background: rgba(0, 0, 0, 0.1);
-}
-.file-input {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 202px;
-  height: 32px;
-  opacity: 0;
-  cursor: pointer;
-}
-.file-name-text {
-  margin-left: 10px;
-  font-size: 1.4rem;
-  color: var(--font-color);
 }
 
 /***
