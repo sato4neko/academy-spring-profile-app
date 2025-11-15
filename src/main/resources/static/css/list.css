@@ -1,0 +1,96 @@
+@charset "utf-8";
+
+/***
+ 項目一覧ページ
+***/
+
+.p-profile-app_skill {
+  max-width: 960px;
+  margin-inline: auto;
+  text-align: left;
+}
+/*上部 期間のselect*/
+.p-profile-app_skill .learning-term {
+  margin-bottom: 40px;
+  padding: 8px 16px;
+  font-size: var(--fs-2);
+  font-weight: bold;
+  color: #000;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.p-profile-app_skill .learning-data {
+  max-width: 960px;
+  padding: 40px;
+  margin-bottom: 36px;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+}
+.p-profile-app_skill .learning-data .head {
+  display: flex;
+  justify-content: space-between;
+}
+.p-profile-app_skill .learning-data .head .title {
+  display: block;
+  width: 240px;
+  padding-bottom: 16px;
+  margin-bottom: 40px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.5);
+  font-size: var(--fs-2);
+  font-weight: bold;
+}
+.p-profile-app_skill .table-form {
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.14),
+    0 3px 1px -2px rgba(0, 0, 0, 0.2);
+}
+.p-profile-app_skill .t-content,
+.t-head {
+  display: block;
+  padding: 0 40px;
+}
+
+/*thead*/
+.p-profile-app_skill .t-head {
+  border-bottom: 1px solid #e0e0e0;
+}
+.p-profile-app_skill .t-head .item-name,
+.p-profile-app_skill .t-head .learning-time {
+  width: 200px;
+  padding: 16px 0;
+  font-size: 1.4rem;
+  color: var(--item-color);
+}
+.p-profile-app_skill .t-head .learning-time {
+  padding-left: 16px;
+}
+
+/*.t-content*/
+.p-profile-app_skill .t-content {
+  border-bottom: 1px solid #e0e0e0;
+}
+.p-profile-app_skill .t-content .name {
+  width: 200px;
+  padding: 26px 16px 26px 0;
+}
+.p-profile-app_skill .t-content .time {
+  width: 240px;
+  padding: 16px 0px 16px 16px;
+}
+.p-profile-app_skill .t-content .time input {
+  width: 160px;
+  height: 40px;
+  padding: 0 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.p-profile-app_skill .t-content .save {
+  width: 200px;
+  padding: 16px 0;
+  text-align: center;
+}
+.p-profile-app_skill .t-content .delete {
+  width: 160px;
+  padding: 16px 0;
+  text-align: right;
+}
