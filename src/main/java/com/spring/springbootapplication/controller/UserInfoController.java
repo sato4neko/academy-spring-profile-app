@@ -56,6 +56,7 @@ public class UserInfoController {
     @GetMapping(value = "/user/add")
     public String displayAdd(Model model) {
         model.addAttribute("title", "新規登録");
+        model.addAttribute("pageTitle", "ユーザー情報登録ページ");
         model.addAttribute("userAddRequest", new UserAddRequest());
         return "user/add";
     }
@@ -134,6 +135,7 @@ public class UserInfoController {
         userUpdateRequest.setProfileDetail(loggedInUser.getProfileDetail());
 
         model.addAttribute("title", "自己紹介を編集する");
+        model.addAttribute("pageTitle", "ユーザー情報更新ページ");
         model.addAttribute("userUpdateRequest", userUpdateRequest);
         return "user/edit";
     }

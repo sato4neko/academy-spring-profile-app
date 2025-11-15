@@ -4,7 +4,12 @@
   xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
   layout:decorate="~{layout/layout}"
 >
-  <footer xmlns:th="http://www.thymeleaf.org" th:fragment="footer" id="footer">
+  <footer
+    xmlns:th="http://www.thymeleaf.org"
+    th:fragment="footer"
+    id="footer"
+    th:classappend="${learningDataArchive} ? 'is-learning-archive-page_footer'"
+  >
     <small>Portfolio site</small>
   </footer>
 </html>

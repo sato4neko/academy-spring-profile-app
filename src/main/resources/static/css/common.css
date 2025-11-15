@@ -18,12 +18,22 @@ a {
   text-decoration: none;
   color: var(--font-color);
 }
+select,
+::picker(select) {
+  appearance: base-select;
+}
+/* スピナー 常時表示 */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+}
 /*CSS変数*/
 :root {
   /*color*/
   --primary-color: #1b5678;
   --secondary-color: #ee6969;
   --font-color: rgba(0, 0, 0, 0.75);
+  --item-color: rgba(0, 0, 0, 0.87);
   --black-color: #000;
   --white-color: #fff;
   /*font-size*/
@@ -142,9 +152,6 @@ img {
 .c-btn--lg--edit:hover {
   color: var(--white-color);
 }
-
-/*自己紹介編集ページ*/
-
 .c-btn-file-upload {
   width: 202px;
   height: 32px;
@@ -156,14 +163,62 @@ img {
   background: rgba(0, 0, 0, 0.1);
 }
 
+/*項目一覧ページ 追加ボタン*/
+.c-btn--md--item--add {
+  background-color: var(--primary-color);
+  border-radius: 4px;
+  width: 178px;
+  height: 48px;
+  font-size: 1.4rem;
+  color: var(--white-color);
+  text-align: center;
+}
+.c-btn--md--item--add:hover {
+  color: var(--white-color);
+}
+
+/*項目一覧ページ 学習時間の保存ボタン*/
+.c-btn--md--learning--save {
+  background-color: var(--white-color);
+  border: 1px solid var(--primary-color);
+  border-radius: 4px;
+  width: 158px;
+  padding: 8px 16px;
+  font-size: 1.4rem;
+  color: var(--primary-color);
+  text-align: center;
+}
+.c-btn--md--learning--save:hover {
+  color: var(--primary-color);
+}
+
+.c-btn--md--learning--delete {
+  background-color: var(--secondary-color);
+  border-radius: 4px;
+  width: 88px;
+  padding: 8px 16px;
+  font-size: 1.4rem;
+  color: var(--white-color);
+  text-align: center;
+}
+.c-btn--md--learning--delete:hover {
+  color: var(--white-color);
+}
+
 /***
  header
 ***/
+header {
+  margin-bottom: 80px;
+}
+/*項目一覧ページ*/
+.is-learning-archive-page_header {
+  margin-bottom: 40px;
+}
 #header {
   background-color: var(--primary-color);
   color: var(--white-color);
   height: 120px;
-  margin-bottom: 80px;
 }
 #header .inner {
   display: flex;
@@ -177,7 +232,9 @@ img {
 #header h1 {
   color: var(--white-color);
 }
-
+#header h1 a {
+  color: inherit;
+}
 /**ログインページ用のheader**/
 .is-login-page {
   justify-content: center;
@@ -191,11 +248,14 @@ img {
 /***
  footer
 ***/
-#footer {
+footer {
   background-color: var(--primary-color);
   color: var(--white-color);
   height: 40px;
   margin-top: 319px;
+}
+.is-learning-archive-page_footer {
+  margin-top: 87px;
 }
 #footer small {
   font-size: var(--fs-3);

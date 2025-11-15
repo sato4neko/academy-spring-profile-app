@@ -46,9 +46,10 @@ public class SecurityConfig {
                 "/error" //エラー対応
             ).permitAll();
 
-            //編集ページへのアクセス認証
+            //各ページへのアクセス認証
             authorize.requestMatchers("/user/edit").authenticated();
-
+            authorize.requestMatchers("/learning/archive").authenticated();
+            
             authorize.anyRequest().authenticated();
             
         });

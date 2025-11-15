@@ -6,9 +6,15 @@
   xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
   layout:decorate="~{layout/layout}"
 >
-  <header xmlns:th="http://www.thymeleaf.org" th:fragment="header" id="header">
+  <header
+    xmlns:th="http://www.thymeleaf.org"
+    th:fragment="header"
+    id="header"
+    th:classappend="${learningDataArchive} ? 'is-learning-archive-page_header'"
+  >
     <div class="inner" th:classappend="${loginPage} ? 'is-login-page'">
-      <h1>My Portfolio</h1>
+      <h1 th:if="${loginPage}">My Portfolio</h1>
+      <h1 th:unless="${loginPage}"><a th:href="@{/}">My Portfolio</a></h1>
 
       <div th:if="${showHeaderButtons == null or showHeaderButtons}">
         <form

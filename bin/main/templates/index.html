@@ -29,7 +29,9 @@
     <div class="chart_outer">
       <div class="chart_inner">
         <h1 class="title" th:text="${learning_chart}"></h1>
-        <a href="#" class="link__btn--edit c-btn--md--chart">編集する</a>
+        <a th:href="@{/learning/list}" class="link__btn--edit c-btn--md--chart"
+          >編集する</a
+        >
       </div>
     </div>
   </section>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.springbootapplication.repository.LearningRecordMapper">
+
+    <select id="findByUserIdAndMonth" resultType="com.spring.springbootapplication.entity.LearningRecord">
+        SELECT
+            ld.id AS id,
+            ld.user_id AS userId,
+            c.name AS categoryName,
+            ld.subject_name AS subjectName,                  
+            ld.month AS month,
+            ld.learning_time AS learningTime,
+            ld.created_at AS createdAt
+        FROM
+            learning_data ld
+        JOIN
+            categories c ON ld.category_id = c.id   
+        WHERE
+            ld.user_id = #{userId}
+        AND
+            DATE_FORMAT(ld.month, '%Y-%m') = DATE_FORMAT(#{targetMonth}, '%Y-%m')
+        ORDER BY
+            ld.month DESC, 
+            ld.created_at DESC
+    </select>
+
+    <select id="findDistinctMonthsByUserId" resultType="java.time.LocalDate">
+        SELECT DISTINCT
+            STR_TO_DATE(DATE_FORMAT(month, '%Y-%m-01'), '%Y-%m-%d') AS distinctMonth
+        FROM
+            learning_data
+        WHERE
+            user_id = #{userId}
+        ORDER BY
+            distinctMonth DESC
+    </select>
+    
+</mapper>

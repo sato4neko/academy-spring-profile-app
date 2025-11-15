@@ -24,7 +24,8 @@ public class TopPageController {
     }
 
     @RequestMapping("/")
-    public String index(Model model,@AuthenticationPrincipal UserInfo loggedInUser) {
+    public String index(Model model, @AuthenticationPrincipal UserInfo loggedInUser) {
+        model.addAttribute("pageTitle", "学習情報詳細ページ");
         model.addAttribute("self_introduction", "自己紹介");
         model.addAttribute("learning_chart", "学習チャート");
 
