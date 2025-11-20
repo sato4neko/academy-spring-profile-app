@@ -9,15 +9,55 @@
   margin-inline: auto;
   text-align: left;
 }
+
 /*上部 期間のselect*/
 .p-profile-app_skill .learning-term {
   margin-bottom: 40px;
-  padding: 8px 16px;
+  padding: 0 16px;
+  width: 107px;
+  height: 44px;
+  line-height: 44px;
+  gap: 8px;
+  justify-content: flex-end;
   font-size: var(--fs-2);
   font-weight: bold;
   color: #000;
   border: 1px solid #ddd;
   border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+.p-profile-app_skill .learning-term:hover {
+  background-color: #ddd;
+}
+/*プルダウンメニュー*/
+.learning-term::picker(select) {
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  border: none;
+  border-radius: 8px;
+  width: 107px;
+  cursor: pointer;
+}
+
+.learning-term::picker-icon {
+  margin: 0;
+  font-size: 1.9rem;
+  color: var(--black-color);
+}
+
+/*option*/
+.learning-term option {
+  font-weight: 400;
+  padding: 8px 0 8px 16px;
+}
+.learning-term option:hover {
+  background-color: #ddd;
+}
+.learning-term option:checked {
+  font-weight: bold;
+}
+.learning-term option::checkmark {
+  display: none;
 }
 
 .p-profile-app_skill .learning-data {
@@ -59,6 +99,7 @@
   width: 200px;
   padding: 16px 0;
   font-size: 1.4rem;
+  font-weight: 500;
   color: var(--item-color);
 }
 .p-profile-app_skill .t-head .learning-time {
@@ -72,10 +113,13 @@
 .p-profile-app_skill .t-content .name {
   width: 200px;
   padding: 26px 16px 26px 0;
+  font-weight: 400;
 }
 .p-profile-app_skill .t-content .time {
   width: 240px;
   padding: 16px 0px 16px 16px;
+  color: #757575;
+  font-weight: 400;
 }
 .p-profile-app_skill .t-content .time input {
   width: 160px;
