@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity-3"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}"
+>
+  <section class="p-profile-app_skill" th:fragment="content">
+    <select
+      class="learning-term"
+      name="期間"
+      id="month-select"
+      onchange="changeContent()"
+    >
+      <option
+        th:each="month, stat : ${distinctMonths}"
+        th:value="${#temporals.format(month, 'yyyy-MM')}"
+        th:text="${#temporals.format(month, 'M月')}"
+        th:selected="${stat.index == 0}"
+      ></option>
+    </select>
+
+    <!--月ごとのコンテンツコンテナ・ループ-->
+    <div th:each="entry : ${monthlyRecordsMap}">
+      <!-- 月別コンテンツエリア -->
+      <div
+        th:id="${entry.key}"
+        class="display_content"
+        th:style="${entry.key == #temporals.format(distinctMonths[0], 'yyyy-MM') ? 'display: block;' : 'display: none;'}"
+      >
+        <!-- カテゴリーごとのループ  -->
+        <div
+          th:each="categoryEntry : ${entry.value}"
+          th:with="categoryRecords=${categoryEntry.value}"
+        >
+          <!-- リストが空でなければ、最初のレコードを格納 -->
+          <div
+            th:if="${not #lists.isEmpty(categoryRecords)}"
+            th:with="firstRecord=${categoryRecords[0]}"
+          >
+            <form class="learning-data mx-auto" action="post">
+              <div class="head">
+                <h3
+                  class="title"
+                  th:text="${firstRecord.getJapaneseCategoryName()}"
+                ></h3>
+                <input
+                  class="c-btn--md--item--add"
+                  type="submit"
+                  value="項目を追加する"
+                  th:formaction="@{/learning/new}"
+                />
+              </div>
+              <table class="table-form">
+                <thead>
+                  <tr class="t-head">
+                    <th class="item-name" th:text="${itemName}"></th>
+                    <th class="learning-time" th:text="${learningTime}"></th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- 科目ごとのループ -->
+                  <tr class="t-content" th:each="record : ${categoryRecords}">
+                    <td class="name" th:text="${record.subjectName}"></td>
+
+                    <td class="time">
+                      <input
+                        type="number"
+                        th:value="${record.learningTime}"
+                        min="0"
+                        step="1"
+                      />
+                    </td>
+                    <td class="save">
+                      <input
+                        class="c-btn--md--learning--save"
+                        type="submit"
+                        value="学習時間を保存する"
+                      />
+                    </td>
+                    <td class="delete">
+                      <input
+                        class="c-btn--md--learning--delete"
+                        type="submit"
+                        value="削除する"
+                      />
+                    </td>
+                  </tr>
+                  <!-- 科目ごとのループ -->
+                </tbody>
+              </table>
+            </form>
+          </div>
+          <!-- リストが空でなければ、最初のレコードを格納 -->
+        </div>
+        <!-- カテゴリーごとのループ  -->
+      </div>
+      <!-- 月別コンテンツエリア -->
+    </div>
+    <!--月ごとのコンテンツコンテナ・ループ-->
+  </section>
+</html>
