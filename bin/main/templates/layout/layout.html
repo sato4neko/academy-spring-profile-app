@@ -8,6 +8,15 @@
   ></head>
   <body>
     <header th:replace="~{common/header :: header}"></header>
+
+    <!--JavaScriptがメッセージを取得-->
+    <div
+      id="global-flash-message-data"
+      th:if="${successMessage != null}"
+      class="hidden"
+      th:text="${successMessage}"
+    ></div>
+
     <main th:insert="~{::content}"></main>
     <footer th:replace="~{common/footer :: footer}"></footer>
   </body>

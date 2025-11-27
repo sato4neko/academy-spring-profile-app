@@ -169,6 +169,7 @@ img {
   border-radius: 4px;
   width: 178px;
   height: 48px;
+  line-height: 48px;
   font-size: 1.4rem;
   color: var(--white-color);
   text-align: center;
@@ -202,6 +203,24 @@ img {
   text-align: center;
 }
 .c-btn--md--learning--delete:hover {
+  color: var(--white-color);
+}
+/*項目追加ページ 追加ボタン*/
+.c-btn--lg--learnig_new {
+  width: 232px;
+}
+/*Modal ボタン*/
+.c-btn--lg--modal {
+  width: 192px;
+  height: 52px;
+  margin-inline: auto;
+  padding: 16px 40px;
+  border-radius: 4px;
+  background-color: var(--primary-color);
+  font-size: 1.4rem;
+  color: var(--white-color);
+}
+.c-btn--lg--modal {
   color: var(--white-color);
 }
 

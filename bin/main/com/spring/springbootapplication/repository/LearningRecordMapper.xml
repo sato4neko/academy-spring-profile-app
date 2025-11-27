@@ -4,37 +4,124 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.spring.springbootapplication.repository.LearningRecordMapper">
 
-    <select id="findByUserIdAndMonth" resultType="com.spring.springbootapplication.entity.LearningRecord">
+    <resultMap id="LearningRecordMap" type="com.spring.springbootapplication.entity.LearningRecord">
+        <id property="id" column="id" />
+        <result property="userId" column="user_id" />
+        <result property="categoryId" column="category_id" />
+        <result property="subjectName" column="subject_name" />
+        <result property="month" column="month" />
+        <result property="learningTime" column="learning_time" />
+        <result property="createdAt" column="created_at" />
+        <result property="categoryName" column="category_name" />
+    </resultMap>
+
+    <select id="findDistinctMonthsByUserId" resultType="java.time.LocalDate">
+        SELECT DISTINCT DATE_FORMAT(month, '%Y-%m-01') as month
+        FROM learning_data
+        WHERE user_id = #{userId}
+        ORDER BY month DESC
+        LIMIT 3
+    </select>
+
+    <select id="findAllByUserId" resultMap="LearningRecordMap">
         SELECT
-            ld.id AS id,
-            ld.user_id AS userId,
-            c.name AS categoryName,
-            ld.subject_name AS subjectName,                  
-            ld.month AS month,
-            ld.learning_time AS learningTime,
-            ld.created_at AS createdAt
+            ld.id,
+            ld.user_id,
+            ld.category_id,
+            ld.subject_name,
+            ld.month,
+            ld.learning_time,
+            c.name AS category_name 
         FROM
             learning_data ld
         JOIN
-            categories c ON ld.category_id = c.id   
+            categories c ON ld.category_id = c.id
         WHERE
             ld.user_id = #{userId}
-        AND
-            DATE_FORMAT(ld.month, '%Y-%m') = DATE_FORMAT(#{targetMonth}, '%Y-%m')
         ORDER BY
-            ld.month DESC, 
-            ld.created_at DESC
+            ld.month DESC, c.id ASC, ld.subject_name ASC
     </select>
 
-    <select id="findDistinctMonthsByUserId" resultType="java.time.LocalDate">
-        SELECT DISTINCT
-            STR_TO_DATE(DATE_FORMAT(month, '%Y-%m-01'), '%Y-%m-%d') AS distinctMonth
+    <select id="findLearningRecordsByUserIdAndMonth" resultMap="LearningRecordMap">
+        SELECT
+            ld.id,
+            ld.user_id,
+            ld.category_id,
+            ld.subject_name,
+            ld.month,
+            ld.learning_time,
+            c.name AS category_name 
         FROM
-            learning_data
+            learning_data ld
+        JOIN
+            categories c ON ld.category_id = c.id
         WHERE
-            user_id = #{userId}
+            ld.user_id = #{userId}
+            AND DATE_FORMAT(ld.month, '%Y-%m') = DATE_FORMAT(#{month}, '%Y-%m')
         ORDER BY
-            distinctMonth DESC
+            c.id, ld.subject_name
     </select>
+
+    <select id="findCategoryIdByName" resultType="int">
+        SELECT id FROM categories WHERE name = #{categoryName}
+    </select>
+
+    <select id="existsBySubjectNameAndMonthAndUserId" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM learning_data
+            WHERE subject_name = #{subjectName}
+            AND month = #{month}
+            AND user_id = #{userId}
+        )
+    </select>
+
+    <select id="getLearningRecordById" resultMap="LearningRecordMap">
+        SELECT
+            ld.id,
+            ld.user_id,
+            ld.category_id,
+            ld.subject_name,
+            ld.month,
+            ld.learning_time,
+            c.name AS category_name
+        FROM
+            learning_data ld
+        JOIN
+            categories c ON ld.category_id = c.id
+        WHERE
+            ld.id = #{id}
+    </select>
+
+    <update id="updateLearningRecord">
+        UPDATE learning_data
+        SET
+            subject_name = #{subjectName},
+            learning_time = #{learningTime},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE
+            id = #{id}
+    </update>
+
+    <insert id="insertLearningRecord" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO learning_data (
+            user_id,
+            category_id,
+            subject_name,
+            month,
+            learning_time
+        ) VALUES (
+            #{userId},
+            #{categoryId},
+            #{subjectName},
+            #{month},
+            #{learningTime}
+        )
+    </insert>
+
+    <delete id="deleteLearningRecord">
+        DELETE FROM learning_data
+        WHERE id = #{id}
+    </delete>
     
 </mapper>

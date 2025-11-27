@@ -16,18 +16,14 @@
         th:each="month, stat : ${distinctMonths}"
         th:value="${#temporals.format(month, 'yyyy-MM')}"
         th:text="${#temporals.format(month, 'M月')}"
-        th:selected="${stat.index == 0}"
+        th:selected="${#temporals.format(month, 'yyyy-MM') == selectedMonth}"
       ></option>
     </select>
 
     <!--月ごとのコンテンツコンテナ・ループ-->
     <div th:each="entry : ${monthlyRecordsMap}">
       <!-- 月別コンテンツエリア -->
-      <div
-        th:id="${entry.key}"
-        class="display_content"
-        th:style="${entry.key == #temporals.format(distinctMonths[0], 'yyyy-MM') ? 'display: block;' : 'display: none;'}"
-      >
+      <div th:id="${entry.key}" class="display_content">
         <!-- カテゴリーごとのループ  -->
         <div
           th:each="categoryEntry : ${entry.value}"
@@ -38,18 +34,18 @@
             th:if="${not #lists.isEmpty(categoryRecords)}"
             th:with="firstRecord=${categoryRecords[0]}"
           >
-            <form class="learning-data mx-auto" action="post">
+            <div class="learning-data mx-auto">
               <div class="head">
                 <h3
                   class="title"
                   th:text="${firstRecord.getJapaneseCategoryName()}"
                 ></h3>
-                <input
+                <a
                   class="c-btn--md--item--add"
-                  type="submit"
-                  value="項目を追加する"
-                  th:formaction="@{/learning/new}"
-                />
+                  th:href="@{/learning/new(category=|${categoryEntry.key}|, month=|${entry.key}|)}"
+                >
+                  項目を追加する
+                </a>
               </div>
               <table class="table-form">
                 <thead>
@@ -61,37 +57,62 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <!-- 科目ごとのループ -->
+                  <!-- 項目ごとのループ -->
                   <tr class="t-content" th:each="record : ${categoryRecords}">
                     <td class="name" th:text="${record.subjectName}"></td>
 
                     <td class="time">
-                      <input
-                        type="number"
-                        th:value="${record.learningTime}"
-                        min="0"
-                        step="1"
-                      />
+                      <form
+                        th:action="@{/learning/update}"
+                        method="post"
+                        th:id="|update-form-${record.id}|"
+                      >
+                        <!-- IDをhiddenフィールドとして含める -->
+                        <input
+                          type="hidden"
+                          name="id"
+                          th:value="${record.id}"
+                        />
+                        <input
+                          type="number"
+                          th:value="${record.learningTime}"
+                          min="0"
+                          step="1"
+                        />
+                      </form>
                     </td>
                     <td class="save">
                       <input
                         class="c-btn--md--learning--save"
                         type="submit"
                         value="学習時間を保存する"
+                        th:form="|update-form-${record.id}|"
                       />
                     </td>
                     <td class="delete">
-                      <input
-                        class="c-btn--md--learning--delete"
-                        type="submit"
-                        value="削除する"
-                      />
+                      <form
+                        th:action="@{/learning/delete}"
+                        method="post"
+                        onsubmit="return confirmDelete(this);"
+                      >
+                        <!-- IDをhiddenフィールドとして含める -->
+                        <input
+                          type="hidden"
+                          name="id"
+                          th:value="${record.id}"
+                        />
+                        <input
+                          class="c-btn--md--learning--delete"
+                          type="submit"
+                          value="削除する"
+                        />
+                      </form>
                     </td>
                   </tr>
                   <!-- 科目ごとのループ -->
                 </tbody>
               </table>
-            </form>
+            </div>
           </div>
           <!-- リストが空でなければ、最初のレコードを格納 -->
         </div>
@@ -100,5 +121,31 @@
       <!-- 月別コンテンツエリア -->
     </div>
     <!--月ごとのコンテンツコンテナ・ループ-->
+
+    <!-- Bootstrap モーダルの構造 -->
+    <div
+      class="modal fade custom-modal-bg"
+      id="successModal"
+      tabindex="-1"
+      aria-labelledby="successModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal-content">
+          <p id="modal-message" class="modal-message-custom">
+            <!--メッセージ-->
+          </p>
+          <button
+            type="button"
+            class="c-btn--lg--modal"
+            id="redirectToListViewButton"
+            data-bs-dismiss="modal"
+          >
+            編集ページへ戻る
+          </button>
+        </div>
+      </div>
+    </div>
+    <!--モーダル ここまで-->
   </section>
 </html>

@@ -27,6 +27,11 @@
   font-size: var(--fs-4);
   width: 100%;
 }
+.p-profile-app_user_update .normal-status-text {
+  font-size: var(--fs-5);
+  color: rgba(0, 0, 0, 0.54);
+  margin: 0;
+}
 
 /*validation時のcss*/
 .p-profile-app_user_update .hasErrors_validaton--form {

@@ -10,14 +10,36 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface LearningRecordMapper {
     
-    // ユーザーIDから学習記録を取得します
-    List<LearningRecord> findByUserIdAndMonth(
-        @Param("userId") Long userId,
-                
-        // 絞り込み用の月パラメータを追加     
-        @Param("targetMonth") LocalDate targetMonth
-    );
-
     // 学習記録がある月を取得 
     List<LocalDate> findDistinctMonthsByUserId(@Param("userId") Long userId);
+
+    // 全ての学習記録を取得
+    List<LearningRecord> findAllByUserId(Long userId); 
+
+    // ユーザーIDと月の学習記録をカテゴリー名と結合して取得
+    List<LearningRecord> findLearningRecordsByUserIdAndMonth(
+        @Param("userId") Long userId,
+        @Param("month") LocalDate month 
+    );
+
+    // カテゴリー名（英語）からカテゴリーIDを取得
+    Integer findCategoryIdByName(@Param("categoryName") String categoryName);
+
+    // データベースに挿入
+    void insertLearningRecord(LearningRecord record);
+
+    // 学習記録の項目名と学習時間を更新
+    int updateLearningRecord(LearningRecord record);
+    
+    // 学習記録を削除
+    int deleteLearningRecord(Long id);
+
+    // 項目名の重複チェック
+    boolean existsBySubjectNameAndMonthAndUserId(
+        @Param("subjectName") String subjectName, 
+        @Param("month") LocalDate month, 
+        @Param("userId") Long userId
+    );
+    // 学習記録を取得
+    LearningRecord getLearningRecordById(Long id); 
 }
