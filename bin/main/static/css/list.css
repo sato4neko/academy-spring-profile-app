@@ -165,7 +165,7 @@
 /*Modalのcss*/
 .p-profile-app_skill .custom-modal-content {
   width: 640px;
-  padding: 60px 0;
+  padding: 60px;
   background-color: #fff;
   border-radius: 0;
   box-shadow: none;
