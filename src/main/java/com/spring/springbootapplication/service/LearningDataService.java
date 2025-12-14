@@ -13,27 +13,32 @@ import org.springframework.transaction.annotation.Transactional;
  * 学習情報 Service
  */
 @Service
+@Transactional(readOnly = true)
 public class LearningDataService {
 
     private final LearningRecordMapper learningRecordMapper;
 
     // Service層の依存関係注入
+    
     public LearningDataService(LearningRecordMapper learningRecordMapper) {
         this.learningRecordMapper = learningRecordMapper;
     }
 
     // 全ての学習記録を取得
+    @Transactional(readOnly = true)
     public List<LearningRecord> getAllRecordsByUserId(Long userId) {
         // MapperにfindAllByUserIdというメソッドがあると仮定して呼び出し
         return learningRecordMapper.findAllByUserId(userId);
     }
 
     // 学習記録の一覧を表示
+    @Transactional(readOnly = true)
     public List<LocalDate> getDistinctMonthsByUserId(Long userId) {
 
         return learningRecordMapper.findDistinctMonthsByUserId(userId);
     }
 
+    @Transactional(readOnly = true)
     public List<LearningRecord> findLearningRecordsByUserIdAndMonth(Long userId, LocalDate month) {
 
         return learningRecordMapper.findLearningRecordsByUserIdAndMonth(userId, month);
@@ -83,17 +88,28 @@ public class LearningDataService {
         }
     }
 
+    @Transactional
+    public boolean updateLearningTime(Long id, Long userId, int learningTime) {
+        // 学習時間は0以上の整数であることを確認（クライアント側でもチェックしていますが、サーバー側でも確認）
+        if (learningTime < 0) {
+            return false;
+        }
+        int rowsAffected = learningRecordMapper.updateLearningTime(id, userId, learningTime);
+        return rowsAffected > 0;
+    }
+
     // 学習記録を削除
     @Transactional
     public void deleteLearningRecord(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("Record ID must not be null for delete.");
         }
-        
+
         int deletedRows = learningRecordMapper.deleteLearningRecord(id);
         if (deletedRows == 0) {
-           
+
             throw new RuntimeException("Failed to delete learning record or record not found with ID: " + id);
         }
     }
+    
 }

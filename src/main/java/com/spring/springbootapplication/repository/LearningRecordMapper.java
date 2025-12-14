@@ -14,7 +14,13 @@ public interface LearningRecordMapper {
     List<LocalDate> findDistinctMonthsByUserId(@Param("userId") Long userId);
 
     // 全ての学習記録を取得
-    List<LearningRecord> findAllByUserId(Long userId); 
+    List<LearningRecord> findAllByUserId(Long userId);
+
+    // 学習記録を取得
+    LearningRecord getLearningRecordById(Long id); 
+    
+    // ユーザーIDと指定された月で学習記録を絞り込んで取得
+    List<LearningRecord> findByUserIdAndMonth(@Param("userId") Long userId, @Param("targetMonth") LocalDate targetMonth);
 
     // ユーザーIDと月の学習記録をカテゴリー名と結合して取得
     List<LearningRecord> findLearningRecordsByUserIdAndMonth(
@@ -30,6 +36,9 @@ public interface LearningRecordMapper {
 
     // 学習記録の項目名と学習時間を更新
     int updateLearningRecord(LearningRecord record);
+
+    // 学習時間を更新
+    int updateLearningTime(@Param("id") Long id, @Param("userId") Long userId, @Param("learningTime") int learningTime);
     
     // 学習記録を削除
     int deleteLearningRecord(Long id);
@@ -40,6 +49,5 @@ public interface LearningRecordMapper {
         @Param("month") LocalDate month, 
         @Param("userId") Long userId
     );
-    // 学習記録を取得
-    LearningRecord getLearningRecordById(Long id); 
+    
 }

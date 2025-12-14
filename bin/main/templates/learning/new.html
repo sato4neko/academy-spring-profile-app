@@ -63,7 +63,6 @@
               type="number"
               class="input_form"
               th:field="*{learningTime}"
-              min="0"
               placeholder="30"
             />
             <p
@@ -76,7 +75,6 @@
           <td
             th:if="${#fields.hasErrors('learningTime')}"
             th:classappend="${#fields.hasErrors('learningTime')} ? 'hasErrors_validaton--text'"
-            th:errors="*{learningTime}"
           >
             <span th:errors="*{learningTime}"></span>
           </td>
@@ -87,7 +85,6 @@
         追加する
       </button>
     </form>
-
     <!-- Bootstrap モーダルの構造 -->
     <div
       class="modal fade custom-modal-bg"
@@ -105,6 +102,7 @@
             type="button"
             class="c-btn--lg--modal"
             id="redirectToListViewButton"
+            th:attr="data-redirect-month=${currentMonthKey}"
             data-bs-dismiss="modal"
           >
             編集ページへ戻る
@@ -114,11 +112,118 @@
     </div>
     <!--モーダル ここまで-->
   </section>
+  <!--URLparameterの取得-->
+  <script layout:fragment="script">
+    var modelMonthKey = "null";
+    var isOverwritten = false;
 
-  <script>
-    // Month形式をYYYY-MM-01形式に変換するためのJavaScript
+    window.selectedMonthKey = null;
+    window.isMonthKeyOverwritten = false;
+
+    if (modelMonthKey !== "null" && modelMonthKey.length === 7) {
+      window.selectedMonthKey = modelMonthKey;
+      window.isMonthKeyOverwritten = true;
+    }
+  </script>
+  <!--日付の取得-->
+  <script layout:fragment="script">
     function updateHiddenMonth(ym) {
       document.getElementById("hiddenMonth").value = ym + "-01";
     }
+  </script>
+  <!--Modal-->
+  <script layout:fragment="script">
+    // Bootstrap Modal インスタンスを保持するための変数
+    let successModalInstance;
+    let modalMessage;
+    let globalFlashMessageData;
+
+    const LIST_PAGE_URL = "/learning/list";
+
+    function openSuccessModal(message, monthkey = null) {
+      const modalElement = document.getElementById("successModal");
+
+      // モーダルインスタンスの初期化
+      if (!successModalInstance && modalElement) {
+        successModalInstance = new bootstrap.Modal(modalElement, {
+          backdrop: "static",
+          keyboard: false,
+        });
+      }
+
+      // モーダルを表示
+      if (!modalMessage) {
+        modalMessage = document.getElementById("modal-message");
+      }
+
+      // メッセージをモーダルボディに表示
+      if (modalMessage) {
+        const htmlMessage = message.replace(/\n/g, "<br>");
+        modalMessage.innerHTML = htmlMessage;
+      }
+
+      // モーダルを表示
+      if (successModalInstance) {
+        successModalInstance.show();
+      }
+    }
+
+    // モーダルを閉じる
+    function closeSuccessModal() {
+      if (successModalInstance) {
+        successModalInstance.hide();
+      }
+    }
+
+    // ページロード時の初期化処理
+    document.addEventListener("DOMContentLoaded", function () {
+      globalFlashMessageData = document.getElementById(
+        "global-flash-message-data"
+      );
+      const redirectButton = document.getElementById(
+        "redirectToListViewButton"
+      );
+
+      if (globalFlashMessageData && globalFlashMessageData.textContent.trim()) {
+        const message = globalFlashMessageData.textContent.trim();
+
+        if (message.length > 0 && message.indexOf("null") === -1) {
+          openSuccessModal(message);
+
+          globalFlashMessageData.textContent = "";
+        }
+      }
+
+      if (redirectButton) {
+        redirectButton.addEventListener("click", function (event) {
+          let monthKeyToUse = redirectButton.getAttribute(
+            "data-redirect-month"
+          );
+          let redirectUrl = LIST_PAGE_URL;
+
+          if (
+            window.isMonthKeyOverwritten === true &&
+            monthKeyToUse &&
+            monthKeyToUse.length === 7
+          ) {
+            if (
+              !monthKeyToUse ||
+              monthKeyToUse === "null" ||
+              monthKeyToUse.length !== 7
+            ) {
+              const today = new Date();
+              const year = today.getFullYear();
+              const month = String(today.getMonth() + 1).padStart(2, "0");
+              monthKeyToUse = `${year}-${month}`;
+            }
+          }
+
+          // パラメータを付加
+          redirectUrl += "?month=" + monthKeyToUse;
+
+          window.location.replace(redirectUrl);
+        });
+      }
+    });
   </script>
 </html>
