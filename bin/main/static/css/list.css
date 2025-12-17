@@ -118,16 +118,19 @@
 
 /*.t-content*/
 .p-profile-app_skill .t-content {
+  display: flex;
   border-bottom: 1px solid #e0e0e0;
   border-left: 1px solid #e0e0e0;
   border-right: 1px solid #e0e0e0;
 }
 .p-profile-app_skill .t-content .name {
-  width: 200px;
-  padding: 26px 16px 26px 0;
+  width: 196px;
+  padding: 26px 16px 0 0;
+  margin-bottom: 8px;
   font-weight: 400;
   /* テキスト折り返し処理 */
-  overflow-wrap: anywhere;
+  overflow-x: auto;
+  white-space: nowrap;
 }
 .p-profile-app_skill .t-content .time {
   width: 240px;
