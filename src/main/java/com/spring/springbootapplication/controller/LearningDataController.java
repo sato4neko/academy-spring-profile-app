@@ -128,7 +128,9 @@ public class LearningDataController {
         model.addAttribute("distinctMonths", allDistinctMonths);    
         model.addAttribute("selectedMonth", targetMonthKey);        
     
-        model.addAttribute("learningDataArchive", true);
+        boolean isArchive = true; 
+        model.addAttribute("learningDataArchive", isArchive);
+        
         model.addAttribute("pageTitle", "学習情報編集ページ");
         model.addAttribute("itemName", "項目名");
         model.addAttribute("learningTime", "学習時間");

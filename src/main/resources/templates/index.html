@@ -33,6 +33,151 @@
           >編集する</a
         >
       </div>
+      <div class="chart_container">
+        <canvas id="myChart"></canvas>
+      </div>
     </div>
   </section>
+  <script layout:fragment="script" th:inline="javascript">
+    /*<![CDATA[*/
+    (function () {
+      const initLearningChart = () => {
+        const canvas = document.getElementById("myChart");
+        if (!canvas) return;
+
+        // Thymeleafからのデータ取得
+        const rawLabels = /*[[${chartLabels}]]*/ [];
+        const backendData = /*[[${backendData}]]*/ [];
+        const frontendData = /*[[${frontendData}]]*/ [];
+        const infraData = /*[[${infraData}]]*/ [];
+
+        // --- Y軸の最大値を計算
+        let maxTotal = 0;
+        const dataLength = rawLabels.length;
+
+        for (let i = 0; i < dataLength; i++) {
+          const sum =
+            (backendData[i] || 0) +
+            (frontendData[i] || 0) +
+            (infraData[i] || 0);
+          if (sum > maxTotal) {
+            maxTotal = sum;
+          }
+        }
+
+        // 目盛りを最大値を10の倍数に切り上げ
+        const step = 10;
+        const yMax =
+          maxTotal > 0 ? Math.ceil((maxTotal + 1) / step) * step : 50;
+
+        // ラベルの変換
+        const processedLabels = rawLabels.map((label, index) => {
+          const distance = rawLabels.length - 1 - index;
+          if (distance === 0) return "今月";
+          if (distance === 1) return "先月";
+          if (distance === 2) return "先々月";
+
+          if (label && label.includes("-")) {
+            return label.split("-")[1] + "月";
+          }
+          return label;
+        });
+
+        const config = {
+          type: "bar",
+          data: {
+            labels: processedLabels,
+            datasets: [
+              {
+                label: "バックエンド",
+                data: backendData,
+                backgroundColor: "#F3B5C2",
+                borderColor: "#F4B7C4",
+                barPercentage: 0.8,
+                categoryPercentage: 0.9,
+              },
+              {
+                label: "フロントエンド",
+                data: frontendData,
+                backgroundColor: "#F7D1AA",
+                borderColor: "#F1AB6B",
+                borderWidth: 1,
+                barPercentage: 0.8,
+                categoryPercentage: 0.9,
+              },
+              {
+                label: "インフラ",
+                data: infraData,
+                backgroundColor: "#FAE6B5",
+                borderColor: "#F6CE72",
+                borderWidth: 1,
+                barPercentage: 0.8,
+                categoryPercentage: 0.9,
+              },
+            ],
+          },
+          options: {
+            maintainAspectRatio: false,
+            responsive: true,
+            plugins: {
+              title: {
+                display: true,
+                text: "Chart.js Bar Chart",
+                font: {
+                  size: 16,
+                  weight: "bold",
+                },
+                color: "#666",
+              },
+              label: {
+                font: {
+                  size: 14,
+                  weight: "regular",
+                  color: "#000",
+                },
+              },
+            },
+            scales: {
+              x: {
+                grid: {
+                  display: true,
+                  drawBorder: true,
+                  borderColor: "#ccc",
+                },
+              },
+              y: {
+                beginAtZero: true,
+                min: 0,
+                max: yMax,
+                ticks: {
+                  stepSize: step,
+                  precision: 0,
+                },
+              },
+            },
+          },
+        };
+
+        // 描画実行
+        try {
+          const ctx = canvas.getContext("2d");
+          const chartStatus = Chart.getChart(canvas);
+          if (chartStatus !== undefined) {
+            chartStatus.destroy();
+          }
+          new Chart(ctx, config);
+        } catch (e) {
+          console.error("Failed to render chart:", e);
+        }
+      };
+
+      // 起動タイミングの制御
+      if (document.readyState === "complete") {
+        initLearningChart();
+      } else {
+        window.addEventListener("load", initLearningChart);
+      }
+    })();
+    /*]]>*/
+  </script>
 </html>
