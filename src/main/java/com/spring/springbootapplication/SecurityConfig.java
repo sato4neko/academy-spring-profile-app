@@ -48,8 +48,8 @@ public class SecurityConfig {
 
             //各ページへのアクセス認証
             authorize.requestMatchers("/user/edit").authenticated();
-            authorize.requestMatchers("/learning/archive").authenticated();
-            
+            authorize.requestMatchers("/learning/list").authenticated();
+            authorize.requestMatchers("/learning/new").authenticated();
             authorize.anyRequest().authenticated();
             
         });

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity-3"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}"
+>
+  <section class="p-profile-app_learning_new" th:fragment="content">
+    <!--カテゴリー名-->
+    <input
+      class="title"
+      type="text"
+      th:value="|${japaneseCategoriesMap.getOrDefault(currentCategoryName, '未分類')}に項目を追加|"
+    />
+
+    <!--入力フォーム-->
+    <form
+      th:action="@{/learning/save}"
+      th:object="${learningRecord}"
+      method="post"
+    >
+      <!--input hidden-->
+      <input
+        type="hidden"
+        th:field="*{categoryName}"
+        th:value="${currentCategoryName}"
+      />
+      <input
+        type="hidden"
+        th:field="*{recordedDate}"
+        th:value="${#temporals.format(currentRecordedDate, 'yyyy-MM-dd')}"
+      />
+
+      <!-- 項目名 -->
+      <table class="c-form mx-auto text-start">
+        <tr>
+          <th>項目名</th>
+          <td
+            th:classappend="${#fields.hasErrors('itemName')} ? 'hasErrors_validaton--form'"
+          >
+            <input
+              class="input_form"
+              type="text"
+              th:field="*{itemName}"
+              placeholder="PHP"
+            />
+          </td>
+          <td
+            th:if="${#fields.hasErrors('itemName')}"
+            th:classappend="${#fields.hasErrors('itemName')} ? 'hasErrors_validaton--text'"
+            th:errors="*{itemName}"
+          >
+            <span th:errors="*{itemName}"></span>
+          </td>
+        </tr>
+        <!-- 学習時間 -->
+        <tr>
+          <th>学習時間</th>
+          <td
+            th:classappend="${#fields.hasErrors('learningTime')} ? 'hasErrors_validaton--form'"
+          >
+            <input
+              type="number"
+              class="input_form"
+              th:field="*{learningTime}"
+              min="0"
+              placeholder="30"
+            />
+            <p
+              th:unless="${#fields.hasErrors('learningTime')}"
+              class="normal-status-text"
+            >
+              分単位で入力してください
+            </p>
+          </td>
+          <td
+            th:if="${#fields.hasErrors('learningTime')}"
+            th:classappend="${#fields.hasErrors('learningTime')} ? 'hasErrors_validaton--text'"
+            th:errors="*{learningTime}"
+          >
+            <span th:errors="*{learningTime}"></span>
+          </td>
+        </tr>
+      </table>
+      <!-- 送信ボタン -->
+      <button type="submit" class="c-btn--lg c-btn--lg--learnig_new">
+        追加する
+      </button>
+    </form>
+
+    <!-- Bootstrap モーダルの構造 -->
+    <div
+      class="modal fade custom-modal-bg"
+      id="successModal"
+      tabindex="-1"
+      aria-labelledby="successModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal-content">
+          <p id="modal-message" class="modal-message-custom">
+            <!--メッセージ-->
+          </p>
+          <button
+            type="button"
+            class="c-btn--lg--modal"
+            id="redirectToListViewButton"
+            data-bs-dismiss="modal"
+          >
+            編集ページへ戻る
+          </button>
+        </div>
+      </div>
+    </div>
+    <!--モーダル ここまで-->
+  </section>
+
+  <script>
+    // Month形式をYYYY-MM-01形式に変換するためのJavaScript
+    function updateHiddenMonth(ym) {
+      document.getElementById("hiddenMonth").value = ym + "-01";
+    }
+  </script>
+</html>

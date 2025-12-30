@@ -1,17 +1,8 @@
+// プルダウンの変更時に呼び出される関数
 function changeContent() {
-  //IDを取得
   const selectElement = document.getElementById("month-select");
-  const selectedMonth = selectElement.value;
+  const selectedMonth = selectElement.value; // YYYY-MM形式
 
-  // コンテンツを非表示
-  // elはコールバック関数に渡される最初の引数 ※勉強用
-  document.querySelectorAll(".display_content").forEach((el) => {
-    el.style.display = "none";
-  });
-
-  // コンテンツを表示
-  const contentToShow = document.getElementById(selectedMonth);
-  if (contentToShow) {
-    contentToShow.style.display = "block";
-  }
+  // 選択された月をURLパラメータとしてリダイレクトする
+  window.location.href = "/learning/list?month=" + selectedMonth;
 }
