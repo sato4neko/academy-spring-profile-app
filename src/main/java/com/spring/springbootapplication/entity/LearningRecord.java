@@ -14,6 +14,9 @@ public class LearningRecord {
 
     // ユーザーID
     private Long userId;
+
+    // カテゴリーID
+    private Integer categoryId; 
     
     // カテゴリー名
     private String categoryName;
@@ -30,7 +33,7 @@ public class LearningRecord {
     // 更新時間
     private LocalDateTime createdAt;
 
-    // DBから取得した英語のカテゴリー名を日本語に変換して返します
+    // DBから取得した英語のカテゴリー名を日本語に変換
     public String getJapaneseCategoryName() {
         switch (this.categoryName) {
             case "Backend":

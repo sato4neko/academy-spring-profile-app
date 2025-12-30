@@ -28,6 +28,12 @@
               rows="5"
               th:field="*{profileDetail}"
             ></textarea>
+            <p
+              th:unless="${#fields.hasErrors('profileDetail')}"
+              class="normal-status-text"
+            >
+              50文字以上、200文字以下で入力してください
+            </p>
           </td>
           <td
             th:if="${#fields.hasErrors('profileDetail')}"

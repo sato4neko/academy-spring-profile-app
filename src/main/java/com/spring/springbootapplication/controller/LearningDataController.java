@@ -4,18 +4,34 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.spring.springbootapplication.entity.UserInfo;
+import com.spring.springbootapplication.form.UpdateValidationGroup;
+import com.spring.springbootapplication.dto.LearningRecordAddRequest;
+import com.spring.springbootapplication.dto.LearningRecordUpdateRequest;
 import com.spring.springbootapplication.entity.LearningRecord;
 import com.spring.springbootapplication.service.LearningDataService;
 
+import jakarta.validation.Valid;
+
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.stream.Collectors;
+
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class LearningDataController {
@@ -23,70 +39,525 @@ public class LearningDataController {
     //Service層の定義
     private final LearningDataService learningDataService;
 
+    // カテゴリーの英語名と日本語名のマッピングを定義
+    private static final Map<String, String> CATEGORY_NAMES_JA = Map.of(
+        "Backend", "バックエンド",
+        "Frontend", "フロントエンド",
+        "Infrastructure", "インフラ"
+    );
+
     //Serviceを注入
     public LearningDataController(LearningDataService learningDataService) {
         this.learningDataService = learningDataService;
     }
 
     // 学習情報編集ページの表示
-    @GetMapping(value = "/learning/list")
-    public String displayLearningData(Model model, @AuthenticationPrincipal UserInfo loggedInUser) {
+    @GetMapping("/learning/list")
+    public String displayLearningDataList(
+            @RequestParam(name = "month", required = false) String monthParam, 
+            @AuthenticationPrincipal UserInfo loggedInUser, 
+            Model model) {
+    
+        if (loggedInUser == null) {
+            return "redirect:/login?error";
+        }
+        
+        
+        
+        Long userId = loggedInUser.getId();
+    
+        // 全学習記録の月リストを取得（YYYY-MM-01形式のLocalDateリスト）
+        List<LocalDate> allDistinctMonths = learningDataService.getDistinctMonthsByUserId(userId);
+    
+        // 月リストを降順にソート
+        allDistinctMonths.sort(Comparator.reverseOrder());
+    
+        // 2. 表示対象の月 (LocalDate) を決定
+        LocalDate targetMonth = null;
+        String targetMonthKey = null; 
+        
+        // monthParamが指定されている場合
+        if (monthParam != null && !monthParam.isBlank()) {
+            try {
+                // YYYYY-MM-01を作成
+                LocalDate requestedMonth = LocalDate.parse(monthParam + "-01");
+                
+                // 月がデータリストに含まれているか確認
+                if (allDistinctMonths.contains(requestedMonth)) {
+                    targetMonth = requestedMonth;
+                    targetMonthKey = monthParam;
+                }
+            } catch (Exception e) {
+                
+            }
+        }
+        
+        // targetMonthが未設定の場合は最新の月をデフォルトにする
+        if (targetMonth == null && !allDistinctMonths.isEmpty()) {
+            targetMonth = allDistinctMonths.get(0); 
+            targetMonthKey = targetMonth.toString().substring(0, 7);
+        }
+        
+        // 3. 選択された月（targetMonth）の学習記録を取得し、Mapに格納
+        Map<String, Map<String, List<LearningRecord>>> monthlyRecordsMap = new HashMap<>();
+    
+        if (targetMonth != null) {
+            
+            // Service層から特定の月で絞り込んだレコードを取得
+            List<LearningRecord> records = learningDataService.findLearningRecordsByUserIdAndMonth(userId, targetMonth);
+            
+            // 選択された月のデータのみをカテゴリごとにグループ化
+            Map<String, List<LearningRecord>> categorizedRecords = records.stream()
+                .collect(Collectors.groupingBy(
+                    LearningRecord::getCategoryName,
+                    Collectors.collectingAndThen(
+                        Collectors.toList(), 
+                        list -> {
+                            list.sort(Comparator.comparing(LearningRecord::getSubjectName));
+                            return list;
+                        }
+                    )
+                ));
+            
+            // targetMonthKeyに対応するデータを格納
+            monthlyRecordsMap.put(targetMonthKey, categorizedRecords);
+        }
+    
+        // Modelにデータを渡す
+        model.addAttribute("monthlyRecordsMap", monthlyRecordsMap); 
+        model.addAttribute("distinctMonths", allDistinctMonths);    
+        model.addAttribute("selectedMonth", targetMonthKey);        
+    
+        boolean isArchive = true; 
+        model.addAttribute("learningDataArchive", isArchive);
+        
+        model.addAttribute("pageTitle", "学習情報編集ページ");
+        model.addAttribute("itemName", "項目名");
+        model.addAttribute("learningTime", "学習時間");
+    
+        return "learning/list";
+    }
 
-        // 未ログイン時の処理
+    // 項目追加ページの表示
+    @GetMapping(value = "/learning/new")
+    public String displayNewLearningRecord(
+        @RequestParam(name = "category", required = false) String categoryParam,
+        @RequestParam(name = "month", required = false) String monthParam,
+        @ModelAttribute("learningRecord") LearningRecordAddRequest request,
+        @AuthenticationPrincipal UserInfo loggedInUser,
+        Model model) {
+                
+        // ログインチェック
         if (loggedInUser == null) {
             return "redirect:/login?error";
         }
 
-        // ログインユーザーIDを取得
-        Long userId = loggedInUser.getId();
-
-        // 月リストを取得
-        List<LocalDate> allDistinctMonths = learningDataService.getDistinctMonthsByUserId(userId);
-
-        // 月リストを降順（新しい順）
-        allDistinctMonths.sort(Comparator.reverseOrder());
-
-        List<LocalDate> limitedMonths;
-        if (allDistinctMonths.size() > 3) {
-            // 直近の3ヶ月を取得
-            limitedMonths = allDistinctMonths.subList(0, 3);
+        // 初期値設定
+        LocalDate currentRecordedDate = LocalDate.now().withDayOfMonth(1); // デフォルトは月1日
+        String currentCategoryName = "Backend"; 
+        
+        
+        // URLパラメータからの月設定
+        if (monthParam != null && !monthParam.isBlank()) {
+            try {
+                // 'YYYY-MM'形式に'-01'を追加
+                LocalDate month = LocalDate.parse(monthParam + "-01");
+                currentRecordedDate = month;
+            } catch (Exception e) {
+                
+            }
+        }
+        
+        // URLパラメータからのカテゴリー設定
+        if (categoryParam != null && !categoryParam.isBlank()) {
+            currentCategoryName = categoryParam.trim();
         } else {
-            // 3ヶ月未満の場合
-            limitedMonths = allDistinctMonths;
+            // デフォルト設定をBackendで設定
+            currentCategoryName = "Backend";
         }
 
-        // 月リストを格納
-        model.addAttribute("distinctMonths", limitedMonths);
+        // DTOにセット
+        request.setCategoryName(currentCategoryName);
 
-        // 月ごとの学習記録を格納するMap 
-        Map<String, Map<String, List<LearningRecord>>> monthlyRecordsMap = new HashMap<>();
+        // LocalDateをStringにフォーマットして設定
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        request.setRecordedDate(currentRecordedDate.format(formatter)); 
 
-        for (LocalDate month : limitedMonths) {
-            // Mapperを呼び出してデータを取得 
-            List<LearningRecord> records = learningDataService.getLearningRecordsByUserIdAndMonth(userId, month);
-            
-            // "yyyy-MM" 形式の文字列
-            String key = month.toString().substring(0, 7); 
-            
-            // レコードをカテゴリー名でグループ化
-            // monthlyRecordsMapに格納
-            monthlyRecordsMap.put(
-                key, 
-                records.stream()
-                       .collect(Collectors.groupingBy(LearningRecord::getCategoryName))
-            ); 
+        // JavaScript連携のために、YYYY-MM形式の月情報をModelにセットする
+        String currentMonthKey = currentRecordedDate.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+        model.addAttribute("currentMonthKey", currentMonthKey);
+
+        //ページタイトル
+        String pageTitle = CATEGORY_NAMES_JA.getOrDefault(currentCategoryName, "未分類") + "学習記録 新規登録";
+        model.addAttribute("pageTitle", pageTitle);
+
+        model.addAttribute("currentCategoryName", currentCategoryName);
+        model.addAttribute("currentRecordedDate", currentRecordedDate); 
+        model.addAttribute("categories", List.of("Backend", "Frontend", "Infrastructure"));
+        model.addAttribute("japaneseCategoriesMap", CATEGORY_NAMES_JA);
+
+        return "learning/new";
+    }
+
+    // 項目の新規登録を保存
+    @PostMapping(value = "/learning/save")
+    public String saveLearningData(@Valid @ModelAttribute("learningRecord") LearningRecordAddRequest request,
+            BindingResult result,
+            @AuthenticationPrincipal UserInfo loggedInUser,
+            // RedirectAttributes redirectAttributes,
+            Model model) {
+
+        // ログインチェック
+        if (loggedInUser == null) {
+            return "redirect:/login?error";
         }
 
-        model.addAttribute("monthlyRecordsMap", monthlyRecordsMap);
+        // データベース側の重複チェック
+        Long userId = loggedInUser.getId();
+        String subjectName = request.getItemName();
 
-        // ヘッダー・フッターのページ固有のCSSの追加
-        model.addAttribute("learningDataArchive", true);
+        // StringをLocalDateに変換
+        LocalDate month = null;
+        if (request.getRecordedDate() != null) {
+            try {
+                month = LocalDate.parse(request.getRecordedDate());
+            } catch (Exception e) {
+                
+            }
+        }
 
-        // 各項目の表示
-        model.addAttribute("pageTitle", "学習情報編集ページ");
-        model.addAttribute("itemName", "項目名");
-        model.addAttribute("learningTime", "学習時間");
+        // validation(項目の重複チェック)
+        if (!result.hasFieldErrors("itemName") && subjectName != null && !subjectName.isBlank() && month != null) {
 
-        return "learning/list";
+            boolean isDuplicated = learningDataService.isRecordDuplicated(subjectName, month, userId);
+
+            if (isDuplicated) {
+
+                // 重複エラーを手動でBindingResultに追加
+                result.addError(new FieldError(
+                        "learningRecord", 
+                        "itemName", 
+                        request.getItemName(), 
+                        false, 
+                        null,  
+                        null, 
+                        "" + subjectName + "は既に登録されています" 
+                ));
+            }
+        }
+    
+        // validation（form側の設定）
+        if (result.hasErrors()) {
+            
+            List<String> errorList = new ArrayList<String>();
+            for (ObjectError error : result.getAllErrors()) {
+                errorList.add(error.getDefaultMessage());
+            }
+            model.addAttribute("validationError", errorList);
+
+            String normalizedCategory = request.getCategoryName() != null ? request.getCategoryName().trim() : "";
+
+            LocalDate recordedDate;
+
+            try {
+                recordedDate = request.getRecordedDate() != null ? LocalDate.parse(request.getRecordedDate()) : LocalDate.now().withDayOfMonth(1);
+            } catch (Exception e) {
+                 recordedDate = LocalDate.now().withDayOfMonth(1);
+            }
+            
+            model.addAttribute("currentCategoryName", normalizedCategory);
+            model.addAttribute("currentRecordedDate", recordedDate); 
+            
+            // ページタイトルを構築
+            String errorPageTitle = CATEGORY_NAMES_JA.getOrDefault(normalizedCategory, "未分類") + "項目の追加 新規登録";
+            
+            // エラー時の再設定
+            model.addAttribute("pageTitle", errorPageTitle); 
+            model.addAttribute("categories", List.of("Backend", "Frontend", "Infrastructure"));
+            model.addAttribute("japaneseCategoriesMap", CATEGORY_NAMES_JA);
+            
+            return "learning/new";
+        }
+
+        // Entityへの変換とデータの保存
+        LearningRecord record = new LearningRecord();
+
+        record.setUserId(loggedInUser.getId());
+        record.setSubjectName(request.getItemName());
+        record.setCategoryName(request.getCategoryName());
+        record.setLearningTime(request.getLearningTime());
+
+        LocalDate targetDate = null;
+
+        // データの保存
+        try {
+
+            // targetDateの代入
+            targetDate = LocalDate.parse(request.getRecordedDate()); 
+            record.setMonth(targetDate);
+
+            // service層で実行
+            learningDataService.saveLearningRecord(record);
+
+            String redirectMonthKey = targetDate.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+
+            // 成功時のメッセージ
+            String categoryJa = CATEGORY_NAMES_JA.getOrDefault(request.getCategoryName(), "未分類");
+            String detailedMessage = String.format("%sに%sを%n%d分で追加しました！",
+                    categoryJa, request.getItemName(), request.getLearningTime());
+        
+            model.addAttribute("currentMonthKey", redirectMonthKey);
+            model.addAttribute("successMessage", detailedMessage);
+
+            //  成功時のModelデータ再設定 
+            model.addAttribute("currentCategoryName", request.getCategoryName());
+            model.addAttribute("currentRecordedDate", LocalDate.parse(request.getRecordedDate())); 
+            model.addAttribute("categories", List.of("Backend", "Frontend", "Infrastructure"));
+            model.addAttribute("japaneseCategoriesMap", CATEGORY_NAMES_JA); 
+            model.addAttribute("pageTitle", "学習記録 新規登録"); 
+            
+            // 登録後、月情報を使ってリダイレクト
+            return "learning/new";
+
+        } catch (IllegalArgumentException e) {
+
+            try {
+                targetDate = request.getRecordedDate() != null ? LocalDate.parse(request.getRecordedDate()) : LocalDate.now().withDayOfMonth(1);
+            } catch (Exception dateEx) {
+                targetDate = LocalDate.now().withDayOfMonth(1);
+            }
+
+            // 入力値に問題がある場合のエラー
+            model.addAttribute("error", "カテゴリーが見つかりませんでした");
+            
+            String currentMonthKey = targetDate.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+
+            model.addAttribute("currentMonthKey", currentMonthKey);
+            model.addAttribute("currentCategoryName", request.getCategoryName());
+            model.addAttribute("currentRecordedDate", targetDate); 
+            model.addAttribute("categories", List.of("Backend", "Frontend", "Infrastructure"));
+            model.addAttribute("japaneseCategoriesMap", CATEGORY_NAMES_JA); 
+            model.addAttribute("pageTitle", "エラー"); 
+
+            return "learning/new";
+
+        } catch (Exception e) {
+            
+            try {
+            targetDate = request.getRecordedDate() != null ? LocalDate.parse(request.getRecordedDate()) : LocalDate.now().withDayOfMonth(1);
+            } catch (Exception dateEx) {
+                targetDate = LocalDate.now().withDayOfMonth(1);
+            }
+    
+            String currentMonthKey = targetDate.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+
+            model.addAttribute("currentMonthKey", currentMonthKey);
+
+            model.addAttribute("currentCategoryName", request.getCategoryName());
+            model.addAttribute("currentRecordedDate", targetDate); 
+            model.addAttribute("categories", List.of("Backend", "Frontend", "Infrastructure"));
+            model.addAttribute("japaneseCategoriesMap", CATEGORY_NAMES_JA); 
+            model.addAttribute("pageTitle", "エラー"); 
+
+            // エラーハンドリング
+            model.addAttribute("error", "保存中に予期せぬエラーが発生しました");
+
+            return "learning/new";
+        }
+    }
+    
+    // 既存の学習記録を更新
+    @PostMapping(value = "/learning/update")
+    public String updateLearningData(
+        @Validated (UpdateValidationGroup.class)
+        @ModelAttribute LearningRecordUpdateRequest request,
+        BindingResult result,
+        @AuthenticationPrincipal UserInfo loggedInUser,
+        RedirectAttributes redirectAttributes,
+        Model model) {
+
+        // ログインチェック
+        if (loggedInUser == null) {
+            return "redirect:/login?error";
+        }
+
+        if (result.hasErrors()) {
+
+            Long userId = loggedInUser.getId();
+            String targetMonthKey = request.getCurrentMonthKey();
+
+            // 学習記録の月リストを取得
+            List<LocalDate> allDistinctMonths = learningDataService.getDistinctMonthsByUserId(userId);
+            allDistinctMonths.sort(Comparator.reverseOrder());
+
+            // 表示対象の月 (LocalDate) を決定
+            LocalDate targetMonth = null;
+            if (targetMonthKey != null && !targetMonthKey.isBlank()) {
+                try {
+                    targetMonth = LocalDate.parse(targetMonthKey + "-01");
+                } catch (Exception e) {
+                    // パース失敗時は何もしない
+                }
+
+                // targetMonthが未設定の場合は最新の月をデフォルトにする 
+                if (targetMonth == null && !allDistinctMonths.isEmpty()) {
+                    targetMonth = allDistinctMonths.get(0);
+                    targetMonthKey = targetMonth.toString().substring(0, 7);
+                }
+            }
+
+            // 選択された月（targetMonth）の学習記録を取得し、Mapに格納
+            Map<String, Map<String, List<LearningRecord>>> monthlyRecordsMap = new HashMap<>();
+
+            if (targetMonth != null) {
+
+                List<LearningRecord> records = learningDataService.findLearningRecordsByUserIdAndMonth(userId,
+                        targetMonth);
+
+                Map<String, List<LearningRecord>> categorizedRecords = records.stream()
+                        .collect(Collectors.groupingBy(
+                                LearningRecord::getCategoryName,
+                                Collectors.collectingAndThen(
+                                        Collectors.toList(),
+                                        list -> {
+                                            list.sort(Comparator.comparing(LearningRecord::getSubjectName));
+                                            return list;
+                                        })));
+
+                monthlyRecordsMap.put(targetMonthKey, categorizedRecords);
+            }
+
+            // エラーメッセージ
+            Map<Long, String> recordErrors = new HashMap<>();
+            for (FieldError error : result.getFieldErrors()) {
+                if ("learningTime".equals(error.getField())) {
+                    recordErrors.put(request.getId(), error.getDefaultMessage());
+                    break; 
+                }
+            }
+            model.addAttribute("recordErrors", recordErrors);
+
+            // Modelにデータを渡す
+            model.addAttribute("monthlyRecordsMap", monthlyRecordsMap);
+            model.addAttribute("distinctMonths", allDistinctMonths);
+            model.addAttribute("selectedMonth", targetMonthKey);
+
+            model.addAttribute("learningDataArchive", true);
+            model.addAttribute("pageTitle", "学習情報編集ページ");
+            model.addAttribute("itemName", "項目名");
+            model.addAttribute("learningTime", "学習時間");
+
+            return "learning/list";
+            
+        }
+
+        System.out.println("DEBUG: Validation PASSED. Proceeding to UPDATE and REDIRECT.");
+
+        String itemName = "";
+        String redirectMonthParam = "";
+
+        // 更新処理
+        LearningRecord record = new LearningRecord();
+        record.setId(request.getId());
+        record.setLearningTime(request.getLearningTime());
+
+        // データの更新
+        try {
+            // 更新対象のレコードの月情報を取得
+            LearningRecord recordToUpdate = learningDataService.getLearningRecordById(request.getId());
+
+            // IDに対応するレコードが存在しない場合は、不正なリクエストとして処理
+            if (recordToUpdate == null) {
+                
+                throw new IllegalArgumentException("更新対象のレコードIDがデータベースに見つかりません: " + request.getId());
+            }
+        
+            // YYYY-MM形式にフォーマット
+            if (recordToUpdate != null && recordToUpdate.getMonth() != null) {
+
+                redirectMonthParam = "?month=" + recordToUpdate.getMonth().toString().substring(0, 7);
+            }
+
+            itemName = recordToUpdate.getSubjectName();
+
+            // service層で実行
+            learningDataService.updateLearningRecord(record);
+
+            // 成功時のメッセージ
+            redirectAttributes.addFlashAttribute("successMessage",itemName + "の学習時間を保存しました！");
+
+        } catch (IllegalArgumentException e) {
+
+            // // 入力値に問題がある場合のエラー
+            redirectAttributes.addFlashAttribute("error", "更新エラー: IDが不正です");
+        } catch (RuntimeException e) {
+
+            // Service層でのエラー
+            redirectAttributes.addFlashAttribute("error", "削除エラーが発生しました: " + e.getMessage());
+        } catch (Exception e) {
+
+            // その他のエラー
+            redirectAttributes.addFlashAttribute("error", "予期せぬエラーが発生しました");
+        }
+        // 登録後、月情報を使ってリダイレクト
+        return "redirect:/learning/list"+ redirectMonthParam;
+    }
+
+    // 既存の学習記録を削除する
+    @PostMapping(value = "/learning/delete")
+    public String deleteLearningRecord(
+        @RequestParam("id") Long id,
+        @AuthenticationPrincipal UserInfo loggedInUser,
+        RedirectAttributes redirectAttributes) {
+
+        if (loggedInUser == null) {
+            return "redirect:/login?error";
+        }
+       
+        String itemName = "";
+        String redirectMonthParam = "";
+
+        try {
+
+            // 削除前にレコードから項目名を取得
+            LearningRecord recordToDelete = learningDataService.getLearningRecordById(id);
+
+            // レコードが見つからない場合はエラー
+            if (recordToDelete == null) {
+
+                throw new IllegalArgumentException("ID: " + id + " の学習記録が見つかりません。");
+            }
+
+            // 項目名を取得して格納
+            itemName = recordToDelete.getSubjectName();
+
+            // リダイレクト先の月情報を取得し、YYYY-MM形式にフォーマットする
+            if (recordToDelete.getMonth() != null) {
+
+                redirectMonthParam = "?month=" + recordToDelete.getMonth().toString().substring(0, 7);
+            }
+
+            // 記録を削除する
+            learningDataService.deleteLearningRecord(id);
+
+            // 成功メッセージ
+            String successMessage = itemName + "を削除しました！";
+            redirectAttributes.addFlashAttribute("successMessage", successMessage);
+
+        } catch (IllegalArgumentException e) {
+
+            // 入力値に問題がある場合のエラー
+            redirectAttributes.addFlashAttribute("error", "削除エラー: IDが不正です");
+        } catch (RuntimeException e) {
+
+            // Service層でのエラー
+            redirectAttributes.addFlashAttribute("error", "削除エラーが発生しました: " + e.getMessage());
+        } catch (Exception e) {
+
+            // その他のエラー
+            redirectAttributes.addFlashAttribute("error", "予期せぬエラーが発生しました");
+        }
+         // 月情報を使ってリダイレクト
+        return "redirect:/learning/list"+ redirectMonthParam;
     }
 }

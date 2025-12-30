@@ -16,18 +16,14 @@
         th:each="month, stat : ${distinctMonths}"
         th:value="${#temporals.format(month, 'yyyy-MM')}"
         th:text="${#temporals.format(month, 'M月')}"
-        th:selected="${stat.index == 0}"
+        th:selected="${#temporals.format(month, 'yyyy-MM') == selectedMonth}"
       ></option>
     </select>
 
     <!--月ごとのコンテンツコンテナ・ループ-->
     <div th:each="entry : ${monthlyRecordsMap}">
       <!-- 月別コンテンツエリア -->
-      <div
-        th:id="${entry.key}"
-        class="display_content"
-        th:style="${entry.key == #temporals.format(distinctMonths[0], 'yyyy-MM') ? 'display: block;' : 'display: none;'}"
-      >
+      <div th:id="${entry.key}" class="display_content">
         <!-- カテゴリーごとのループ  -->
         <div
           th:each="categoryEntry : ${entry.value}"
@@ -38,60 +34,113 @@
             th:if="${not #lists.isEmpty(categoryRecords)}"
             th:with="firstRecord=${categoryRecords[0]}"
           >
-            <form class="learning-data mx-auto" action="post">
+            <div class="learning-data mx-auto">
               <div class="head">
                 <h3
                   class="title"
                   th:text="${firstRecord.getJapaneseCategoryName()}"
                 ></h3>
-                <input
+                <a
                   class="c-btn--md--item--add"
-                  type="submit"
-                  value="項目を追加する"
-                  th:formaction="@{/learning/new}"
-                />
+                  th:href="@{/learning/new(category=|${categoryEntry.key}|, month=|${entry.key}|)}"
+                >
+                  項目を追加する
+                </a>
               </div>
-              <table class="table-form">
-                <thead>
-                  <tr class="t-head">
-                    <th class="item-name" th:text="${itemName}"></th>
-                    <th class="learning-time" th:text="${learningTime}"></th>
-                    <th></th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <!-- 科目ごとのループ -->
-                  <tr class="t-content" th:each="record : ${categoryRecords}">
-                    <td class="name" th:text="${record.subjectName}"></td>
-
-                    <td class="time">
-                      <input
-                        type="number"
-                        th:value="${record.learningTime}"
-                        min="0"
-                        step="1"
-                      />
-                    </td>
-                    <td class="save">
-                      <input
-                        class="c-btn--md--learning--save"
-                        type="submit"
-                        value="学習時間を保存する"
-                      />
-                    </td>
-                    <td class="delete">
-                      <input
-                        class="c-btn--md--learning--delete"
-                        type="submit"
-                        value="削除する"
-                      />
-                    </td>
-                  </tr>
-                  <!-- 科目ごとのループ -->
-                </tbody>
-              </table>
-            </form>
+              <div class="table-responsive max-h-rows">
+                <table class="table-form">
+                  <thead>
+                    <tr class="t-head">
+                      <th class="item-name" th:text="${itemName}"></th>
+                      <th class="learning-time" th:text="${learningTime}"></th>
+                      <th></th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- 項目ごとのループ -->
+                    <tr class="t-content" th:each="record : ${categoryRecords}">
+                      <td class="name" th:text="${record.subjectName}"></td>
+                      <th:block
+                        th:with="errorMsg=(${recordErrors != null and recordErrors.containsKey(record.id)}) ? ${recordErrors.get(record.id)} : null"
+                      >
+                        <form
+                          th:action="@{/learning/update}"
+                          method="post"
+                          th:id="|update-form-${record.id}|"
+                        >
+                          <td class="time">
+                            <input
+                              type="number"
+                              name="learningTime"
+                              th:value="${errorMsg} ? ${learningRecordUpdateRequest.learningTime} : ${record.learningTime}"
+                              th:id="|time-input-${record.id}|"
+                              th:data-record-month="${entry.key}"
+                              step="1"
+                            />
+                            <div
+                              th:if="${errorMsg}"
+                              class="validation-error-text"
+                            >
+                              <span th:text="${errorMsg}"></span>
+                            </div>
+                          </td>
+                          <td class="save">
+                            <input
+                              class="c-btn--md--learning--save"
+                              type="submit"
+                              value="学習時間を保存する"
+                            />
+                            <!--hiddun-->
+                            <input
+                              type="hidden"
+                              name="id"
+                              th:value="${record.id}"
+                            />
+                            <input
+                              type="hidden"
+                              name="subjectName"
+                              th:value="${record.subjectName}"
+                            />
+                            <input
+                              type="hidden"
+                              name="currentMonthKey"
+                              th:value="${entry.key}"
+                            />
+                          </td>
+                        </form>
+                      </th:block>
+                      <td class="delete">
+                        <form
+                          th:action="@{/learning/delete}"
+                          method="post"
+                          onsubmit="return confirmDelete(this);"
+                        >
+                          <input
+                            class="c-btn--md--learning--delete"
+                            type="submit"
+                            value="削除する"
+                          />
+                          <!-- hidden -->
+                          <input
+                            type="hidden"
+                            name="id"
+                            th:value="${record.id}"
+                          />
+                          <input
+                            type="hidden"
+                            name="currentMonthKey"
+                            th:value="${selectedMonth}"
+                          />
+                        </form>
+                      </td>
+                    </tr>
+                    <!-- 項目ごとのループ -->
+                  </tbody>
+                </table>
+              </div>
+              <!--  -->
+            </div>
           </div>
           <!-- リストが空でなければ、最初のレコードを格納 -->
         </div>
@@ -100,5 +149,106 @@
       <!-- 月別コンテンツエリア -->
     </div>
     <!--月ごとのコンテンツコンテナ・ループ-->
+
+    <!-- Bootstrap モーダルの構造 -->
+    <div
+      class="modal fade custom-modal-bg"
+      id="successModal"
+      tabindex="-1"
+      aria-labelledby="successModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal-content">
+          <p id="modal-message" class="modal-message-custom">
+            <!--メッセージ-->
+          </p>
+          <button
+            type="button"
+            class="c-btn--lg--modal"
+            id="redirectToListViewButton"
+            data-bs-dismiss="modal"
+          >
+            編集ページへ戻る
+          </button>
+        </div>
+      </div>
+    </div>
+    <!--モーダル ここまで-->
   </section>
+  <!--Modal-->
+  <script layout:fragment="script">
+    // Bootstrap Modal インスタンスを保持するための変数
+    let successModalInstance;
+    let modalMessage;
+    let globalFlashMessageData;
+
+    const LIST_PAGE_URL = "/learning/list";
+
+    function openSuccessModal(message) {
+      const modalElement = document.getElementById("successModal");
+
+      // モーダルインスタンスの初期化
+      if (!successModalInstance && modalElement) {
+        successModalInstance = new bootstrap.Modal(modalElement, {
+          backdrop: "static",
+          keyboard: false,
+        });
+      }
+
+      // モーダルを表示
+      if (!modalMessage) {
+        modalMessage = document.getElementById("modal-message");
+      }
+
+      // メッセージをモーダルボディに表示
+      if (modalMessage) {
+        const htmlMessage = message.replace(/\n/g, "<br>");
+        modalMessage.innerHTML = htmlMessage;
+      }
+
+      // モーダルを表示
+      if (successModalInstance) {
+        successModalInstance.show();
+      }
+    }
+
+    // モーダルを閉じる
+    function closeSuccessModal() {
+      if (successModalInstance) {
+        successModalInstance.hide();
+      }
+    }
+
+    // ページロード時の初期化処理
+    document.addEventListener("DOMContentLoaded", function () {
+      globalFlashMessageData = document.getElementById(
+        "global-flash-message-data"
+      );
+      const redirectButton = document.getElementById(
+        "redirectToListViewButton"
+      );
+
+      if (globalFlashMessageData && globalFlashMessageData.textContent.trim()) {
+        const message = globalFlashMessageData.textContent.trim();
+
+        if (message.length > 0 && message.indexOf("null") === -1) {
+          openSuccessModal(message);
+          globalFlashMessageData.textContent = "";
+        }
+      }
+
+      if (redirectButton) {
+        redirectButton.addEventListener("click", function (event) {
+          let redirectUrl = LIST_PAGE_URL;
+
+          if (selectedMonth && selectedMonth !== "default-month") {
+            redirectUrl += "?month=" + selectedMonth;
+          }
+
+          window.location.replace(redirectUrl);
+        });
+      }
+    });
+  </script>
 </html>
