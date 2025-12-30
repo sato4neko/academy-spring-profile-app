@@ -89,10 +89,20 @@
   display: block;
   padding: 0 40px;
 }
+.p-profile-app_skill .max-h-rows {
+  max-height: 286px;
+  overflow-y: scroll;
+}
 
 /*thead*/
+.p-profile-app_skill thead {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 10;
+}
 .p-profile-app_skill .t-head {
-  border-bottom: 1px solid #e0e0e0;
+  border: 1px solid #e0e0e0;
 }
 .p-profile-app_skill .t-head .item-name,
 .p-profile-app_skill .t-head .learning-time {
@@ -108,12 +118,19 @@
 
 /*.t-content*/
 .p-profile-app_skill .t-content {
+  display: flex;
   border-bottom: 1px solid #e0e0e0;
+  border-left: 1px solid #e0e0e0;
+  border-right: 1px solid #e0e0e0;
 }
 .p-profile-app_skill .t-content .name {
-  width: 200px;
-  padding: 26px 16px 26px 0;
+  width: 196px;
+  padding: 26px 16px 0 0;
+  margin-bottom: 8px;
   font-weight: 400;
+  /* テキスト折り返し処理 */
+  overflow-x: auto;
+  white-space: nowrap;
 }
 .p-profile-app_skill .t-content .time {
   width: 240px;
@@ -139,10 +156,19 @@
   text-align: right;
 }
 
+/*Validationのcss*/
+.p-profile-app_skill .validation-error-text {
+  width: 160px;
+}
+.p-profile-app_skill .validation-error-text span {
+  color: red;
+  font-size: 1rem;
+}
+
 /*Modalのcss*/
 .p-profile-app_skill .custom-modal-content {
   width: 640px;
-  padding: 50px 0;
+  padding: 60px;
   background-color: #fff;
   border-radius: 0;
   box-shadow: none;
@@ -150,7 +176,7 @@
 }
 .p-profile-app_skill .modal-message-custom {
   margin-inline: auto;
-  max-width: 251px;
+
   width: fit-content;
   text-align: left;
   font-size: var(--fs-3);
@@ -161,6 +187,10 @@
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
+
 .p-profile-app_skill .custom-modal-bg {
   background-color: rgba(0, 0, 0, 0.25);
+}
+.modal {
+  --bs-modal-width: 640px;
 }

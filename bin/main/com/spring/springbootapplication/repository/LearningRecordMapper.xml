@@ -96,7 +96,7 @@
     <update id="updateLearningRecord">
         UPDATE learning_data
         SET
-            subject_name = #{subjectName},
+            <!--subject_name = #{subjectName},-->
             learning_time = #{learningTime},
             updated_at = CURRENT_TIMESTAMP
         WHERE
