@@ -156,6 +156,13 @@
   text-align: right;
 }
 
+/*項目データがない場合のメッセージ*/
+.p-profile-app_skill .zero-data-message {
+  text-align: center;
+  padding: 20px;
+  color: var(--font-color);
+}
+
 /*Validationのcss*/
 .p-profile-app_skill .validation-error-text {
   width: 160px;
