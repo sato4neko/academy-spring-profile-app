@@ -41,11 +41,12 @@ public class LearningDataController {
     private final LearningDataService learningDataService;
 
     // カテゴリーの英語名と日本語名のマッピングを定義
-    private static final Map<String, String> CATEGORY_NAMES_JA = Map.of(
-        "Backend", "バックエンド",
-        "Frontend", "フロントエンド",
-        "Infrastructure", "インフラ"
-    );
+    private static final Map<String, String> CATEGORY_NAMES_JA = new LinkedHashMap<>();
+    static {
+        CATEGORY_NAMES_JA.put("Backend", "バックエンド");
+        CATEGORY_NAMES_JA.put("Frontend", "フロントエンド");
+        CATEGORY_NAMES_JA.put("Infrastructure", "インフラ");
+    }
 
     //Serviceを注入
     public LearningDataController(LearningDataService learningDataService) {
@@ -63,8 +64,6 @@ public class LearningDataController {
             return "redirect:/login?error";
         }
         
-        
-        
         Long userId = loggedInUser.getId();
     
         // 全学習記録の月リストを取得（YYYY-MM-01形式のLocalDateリスト）
@@ -73,7 +72,7 @@ public class LearningDataController {
         // 月リストを降順にソート
         allDistinctMonths.sort(Comparator.reverseOrder());
     
-        // 2. 表示対象の月 (LocalDate) を決定
+        // 表示対象の月 (LocalDate) を決定
         LocalDate targetMonth = null;
         String targetMonthKey = null; 
         
@@ -81,9 +80,7 @@ public class LearningDataController {
         if (monthParam != null && !monthParam.isBlank()) {
             try {
                 // YYYYY-MM-01を作成
-                LocalDate requestedMonth = LocalDate.parse(monthParam + "-01");
-
-                targetMonth = requestedMonth;
+                targetMonth = LocalDate.parse(monthParam + "-01");
                 targetMonthKey = monthParam;
             } catch (Exception e) {
                 
@@ -101,30 +98,28 @@ public class LearningDataController {
     
         if (targetMonth != null) {
             
-            // Service層から特定の月で絞り込んだレコードを取得
             List<LearningRecord> records = learningDataService.findLearningRecordsByUserIdAndMonth(userId, targetMonth);
             
-            // 修正：データをカテゴリーごとにグループ化
-            Map<String, List<LearningRecord>> groupedRecords = records.stream()
+            // カテゴリーごとにグループ化
+            Map<String, List<LearningRecord>> grouped = records.stream()
                 .collect(Collectors.groupingBy(LearningRecord::getCategoryName));
 
-            // 修正：表示順序を保持するためにLinkedHashMapを作成
-            Map<String, List<LearningRecord>> categorizedRecords = new LinkedHashMap<>();
+            // CATEGORY_NAMES_JA のキー順に並び替え
+            Map<String, List<LearningRecord>> orderedCategorizedRecords = new LinkedHashMap<>();
+            
             for (String categoryKey : CATEGORY_NAMES_JA.keySet()) {
-
-                // 該当カテゴリーのレコードリストを取得
-                // なければ空リストを設定
-                List<LearningRecord> list = groupedRecords.getOrDefault(categoryKey, new ArrayList<>());
+                // 該当カテゴリーのリスト取得（なければ空リスト）
+                List<LearningRecord> list = grouped.getOrDefault(categoryKey, new ArrayList<>());
                 
-                // 項目名順にソート
+                // 項目名でソート
                 list.sort(Comparator.comparing(LearningRecord::getSubjectName));
                 
-                // マップに追加
-                categorizedRecords.put(categoryKey, list);
+                // LinkedHashMapに追加することで表示順序を確定
+                orderedCategorizedRecords.put(categoryKey, list);
             }
             
             // targetMonthKeyに対応するデータを格納
-            monthlyRecordsMap.put(targetMonthKey, categorizedRecords);
+            monthlyRecordsMap.put(targetMonthKey, orderedCategorizedRecords);
         }
     
         // Modelにデータを渡す
@@ -132,7 +127,7 @@ public class LearningDataController {
         model.addAttribute("distinctMonths", allDistinctMonths);    
         model.addAttribute("selectedMonth", targetMonthKey);
         
-        // 追加: 日本語カテゴリー名マップを渡す（レコードがない場合のタイトル表示に必要）
+        // 追加: 日本語カテゴリー名マップを渡す
         model.addAttribute("japaneseCategoriesMap", CATEGORY_NAMES_JA);
     
         boolean isArchive = true; 
