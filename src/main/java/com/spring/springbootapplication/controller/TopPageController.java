@@ -3,9 +3,11 @@ package com.spring.springbootapplication.controller;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -84,26 +86,16 @@ public class TopPageController {
                     aggregatedData = new HashMap<>();
                 }
 
-                // デバッグ・フロントエンド予備用
-                try {
-
-                    ObjectMapper mapper = new ObjectMapper();
-                    String json = mapper.writeValueAsString(aggregatedData);
-                    model.addAttribute("aggregatedDataJson", json);
-                } catch (Exception e) {
-
-                    model.addAttribute("aggregatedDataJson", "{}");
-                    e.printStackTrace(); 
-                }
-
                 // 表示したい直近3ヶ月のラベルを生成
-                LocalDate today = LocalDate.now();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+                List<LocalDate> distinctMonths = learningDataService.getDistinctMonthsByUserId(latestUserInfo.getId());
                 
+                //月リストを Chart.js 用の yyyy-MM 形式のラベルに変換
                 List<String> labels = new ArrayList<>();
-                for (int i = 2; i >= 0; i--) {
-                    labels.add(today.minusMonths(i).format(formatter));
-                }
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+                labels = distinctMonths.stream()
+                .map(date -> date.format(formatter))
+                .collect(Collectors.toList());
+                Collections.reverse(labels); 
 
                 // 各カテゴリのデータリストを「0」で初期化
                 List<Integer> backendData = new ArrayList<>();

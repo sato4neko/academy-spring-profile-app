@@ -508,58 +508,62 @@ public class LearningDataController {
     // 既存の学習記録を削除する
     @PostMapping(value = "/learning/delete")
     public String deleteLearningRecord(
-        @RequestParam("id") Long id,
-        @AuthenticationPrincipal UserInfo loggedInUser,
-        RedirectAttributes redirectAttributes) {
+            @RequestParam("id") Long id,
+            @AuthenticationPrincipal UserInfo loggedInUser,
+            RedirectAttributes redirectAttributes) {
 
         if (loggedInUser == null) {
             return "redirect:/login?error";
         }
        
-        String itemName = "";
+        Long userId = loggedInUser.getId();
         String redirectMonthParam = "";
 
         try {
-
-            // 削除前にレコードから項目名を取得
+            //  削除前にレコードを取得
             LearningRecord recordToDelete = learningDataService.getLearningRecordById(id);
 
-            // レコードが見つからない場合はエラー
             if (recordToDelete == null) {
-
                 throw new IllegalArgumentException("ID: " + id + " の学習記録が見つかりません。");
             }
 
-            // 項目名を取得して格納
-            itemName = recordToDelete.getSubjectName();
+            String itemName = recordToDelete.getSubjectName();
+            LocalDate targetDate = recordToDelete.getMonth();
+            String currentMonthKey = targetDate.toString().substring(0, 7);
 
-            // リダイレクト先の月情報を取得し、YYYY-MM形式にフォーマットする
-            if (recordToDelete.getMonth() != null) {
+            // 記録を削除
+            learningDataService.deleteLearningRecord(id);
 
-                redirectMonthParam = "?month=" + recordToDelete.getMonth().toString().substring(0, 7);
+            // 削除後の該当月の残件数を確認
+            List<LearningRecord> remaining = learningDataService.findLearningRecordsByUserIdAndMonth(userId, targetDate);
+            
+            String finalRedirectMonth = currentMonthKey;
+
+            // 該当月のデータが0件になった場合
+            if (remaining.isEmpty()) {
+                // DBにデータが存在する「最新の月」を取得
+                List<LocalDate> availableMonths = learningDataService.getDistinctMonthsByUserId(userId);
+                if (!availableMonths.isEmpty()) {
+                    // 新しいリダイレクト先（最新の月）を設定
+                    finalRedirectMonth = availableMonths.get(0).toString().substring(0, 7);
+                }
             }
 
-            // 記録を削除する
-            learningDataService.deleteLearningRecord(id);
+            // リダイレクトURLの構築
+            redirectMonthParam = "?month=" + finalRedirectMonth;
 
             // 成功メッセージ
             String successMessage = itemName + "を削除しました！";
             redirectAttributes.addFlashAttribute("successMessage", successMessage);
 
         } catch (IllegalArgumentException e) {
-
-            // 入力値に問題がある場合のエラー
-            redirectAttributes.addFlashAttribute("error", "削除エラー: IDが不正です");
+            redirectAttributes.addFlashAttribute("error", "削除エラー: " + e.getMessage());
         } catch (RuntimeException e) {
-
-            // Service層でのエラー
             redirectAttributes.addFlashAttribute("error", "削除エラーが発生しました: " + e.getMessage());
         } catch (Exception e) {
-
-            // その他のエラー
             redirectAttributes.addFlashAttribute("error", "予期せぬエラーが発生しました");
         }
-         // 月情報を使ってリダイレクト
-        return "redirect:/learning/list"+ redirectMonthParam;
+
+        return "redirect:/learning/list" + redirectMonthParam;
     }
 }

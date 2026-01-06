@@ -148,7 +148,7 @@
                 class="zero-data-message"
                 th:if="${#lists.isEmpty(categoryRecords)}"
               >
-                まだ学習記録がありません。
+                学習記録がありません。
               </div>
             </div>
           </div>
@@ -251,7 +251,7 @@
         redirectButton.addEventListener("click", function (event) {
           let redirectUrl = LIST_PAGE_URL;
 
-          // 修正箇所: URLのクエリパラメータから 'month' を取得して selectedMonth を定義する
+          // 修正: URLのクエリパラメータから 'month' を取得して selectedMonth を定義
           const urlParams = new URLSearchParams(window.location.search);
           const selectedMonth = urlParams.get("month");
 

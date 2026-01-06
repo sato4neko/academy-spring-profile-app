@@ -47,46 +47,62 @@
 
         // Thymeleafからのデータ取得
         const rawLabels = /*[[${chartLabels}]]*/ [];
-        const backendData = /*[[${backendData}]]*/ [];
-        const frontendData = /*[[${frontendData}]]*/ [];
-        const infraData = /*[[${infraData}]]*/ [];
+        const rawBackend = /*[[${backendData}]]*/ [];
+        const rawFrontend = /*[[${frontendData}]]*/ [];
+        const rawInfra = /*[[${infraData}]]*/ [];
 
-        // --- Y軸の最大値を計算
-        let maxTotal = 0;
-        const dataLength = rawLabels.length;
+        // データのフィルタリング
+        const validMonths = [];
+        for (let i = 0; i < rawLabels.length; i++) {
+          const b = rawBackend[i] || 0;
+          const f = rawFrontend[i] || 0;
+          const infr = rawInfra[i] || 0;
+          const total = b + f + infr;
 
-        for (let i = 0; i < dataLength; i++) {
-          const sum =
-            (backendData[i] || 0) +
-            (frontendData[i] || 0) +
-            (infraData[i] || 0);
-          if (sum > maxTotal) {
-            maxTotal = sum;
+          if (total > 0) {
+            validMonths.push({
+              label: rawLabels[i],
+              backend: b,
+              frontend: f,
+              infra: infr,
+            });
           }
         }
 
-        // 目盛りを最大値を10の倍数に切り上げ
-        const step = 10;
-        const yMax =
-          maxTotal > 0 ? Math.ceil((maxTotal + 1) / step) * step : 50;
+        // データがある月の中から,最新の3ヶ月分を取得
+        const displayedData = validMonths.slice(-3);
 
-        // ラベルの変換
-        const processedLabels = rawLabels.map((label, index) => {
-          const distance = rawLabels.length - 1 - index;
+        // 各データ配列の再構築
+        const filteredLabels = displayedData.map((d) => d.label);
+        const backendData = displayedData.map((d) => d.backend);
+        const frontendData = displayedData.map((d) => d.frontend);
+        const infraData = displayedData.map((d) => d.infra);
+
+        // ラベルの名称変換
+        const finalLabels = filteredLabels.map((label, index) => {
+          const distance = filteredLabels.length - 1 - index;
+
           if (distance === 0) return "今月";
           if (distance === 1) return "先月";
           if (distance === 2) return "先々月";
 
-          if (label && label.includes("-")) {
-            return label.split("-")[1] + "月";
-          }
           return label;
         });
+
+        // Y軸の最大値計算
+        let maxTotal = 0;
+        for (let i = 0; i < backendData.length; i++) {
+          const sum = backendData[i] + frontendData[i] + infraData[i];
+          if (sum > maxTotal) maxTotal = sum;
+        }
+        const step = 10;
+        const yMax =
+          maxTotal > 0 ? Math.ceil((maxTotal + 1) / step) * step : 50;
 
         const config = {
           type: "bar",
           data: {
-            labels: processedLabels,
+            labels: finalLabels,
             datasets: [
               {
                 label: "バックエンド",
