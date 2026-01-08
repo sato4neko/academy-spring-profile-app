@@ -3,18 +3,14 @@ package com.spring.springbootapplication.controller;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.springbootapplication.entity.UserInfo;
 import com.spring.springbootapplication.service.FileStorageService;
 import com.spring.springbootapplication.service.LearningDataService;
@@ -80,57 +76,49 @@ public class TopPageController {
                 // --- チャートデータの生成ロジック ---
 
                 // Serviceからカテゴリ, 学習時間を取得
-                Map<String, Map<String, Integer>> aggregatedData = learningDataService
-                        .getChartData(latestUserInfo.getId());
-                if (aggregatedData == null) {
-                    aggregatedData = new HashMap<>();
+                Map<String, Map<String, Integer>> aggregatedData = learningDataService.getChartData(loggedInUser.getId());
+
+                // 常に直近3ヶ月のラベル(YYYY-MM)を生成する
+                LocalDate today = LocalDate.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+                
+                List<String> labels = new ArrayList<>();
+                for (int i = 2; i >= 0; i--) {
+                    // [2ヶ月前, 1ヶ月前, 今月] の順で追加
+                    labels.add(today.minusMonths(i).format(formatter));
                 }
 
-                // 表示したい直近3ヶ月のラベルを生成
-                List<LocalDate> distinctMonths = learningDataService.getDistinctMonthsByUserId(latestUserInfo.getId());
-                
-                //月リストを Chart.js 用の yyyy-MM 形式のラベルに変換
-                List<String> labels = new ArrayList<>();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
-                labels = distinctMonths.stream()
-                .map(date -> date.format(formatter))
-                .collect(Collectors.toList());
-                Collections.reverse(labels); 
-
-                // 各カテゴリのデータリストを「0」で初期化
+                // 生成したラベルに基づいてデータを抽出（データがなければ0を入れる）
                 List<Integer> backendData = new ArrayList<>();
                 List<Integer> frontendData = new ArrayList<>();
                 List<Integer> infraData = new ArrayList<>();
-                        
-                for (String month : labels) {
-                    Map<String, Integer> categoryMap = aggregatedData.get(month);
 
+                for (String monthKey : labels) {
+                    Map<String, Integer> categoryMap = aggregatedData.get(monthKey);
                     if (categoryMap != null) {
-
                         backendData.add(categoryMap.getOrDefault("バックエンド", 0));
                         frontendData.add(categoryMap.getOrDefault("フロントエンド", 0));
                         infraData.add(categoryMap.getOrDefault("インフラ", 0));
                     } else {
-                        
                         backendData.add(0);
                         frontendData.add(0);
                         infraData.add(0);
                     }
                 }
 
-                // Modelに追加
-                model.addAttribute("chartLabels", labels);
-                model.addAttribute("backendData", backendData);
-                model.addAttribute("frontendData", frontendData);
-                model.addAttribute("infraData", infraData);
+                        // Modelに追加
+                        model.addAttribute("chartLabels", labels);
+                        model.addAttribute("backendData", backendData);
+                        model.addAttribute("frontendData", frontendData);
+                        model.addAttribute("infraData", infraData);
 
-            } else {
+                    } else {
 
-                // 情報が見つからない場合の処理
-                model.addAttribute("username", "ゲスト");
-                model.addAttribute("isLoggedIn", false);
+                        // 情報が見つからない場合の処理
+                        model.addAttribute("username", "ゲスト");
+                        model.addAttribute("isLoggedIn", false);
 
-            }
+                    }
 
         } else {
 

@@ -25,9 +25,11 @@ import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.stream.Collectors;
@@ -66,15 +68,22 @@ public class LearningDataController {
         
         Long userId = loggedInUser.getId();
     
-        // 全学習記録の月リストを取得（YYYY-MM-01形式のLocalDateリスト）
-        List<LocalDate> allDistinctMonths = learningDataService.getDistinctMonthsByUserId(userId);
-    
-        // 月リストを降順にソート
+        // 月リストの構築 (Setを使って重複を排除)
+        Set<LocalDate> monthSet = new HashSet<>();
+        
+        // 直近3ヶ月間を常にリストに追加する
+        LocalDate today = LocalDate.now().withDayOfMonth(1);
+        for (int i = 0; i < 3; i++) {
+            monthSet.add(today.minusMonths(i));
+        }
+
+        // DBにデータがある他の月も追加
+        List<LocalDate> allDistinctMonths = new ArrayList<>(monthSet);
         allDistinctMonths.sort(Comparator.reverseOrder());
-    
-        // 表示対象の月 (LocalDate) を決定
+
+        // 表示対象の月を決定
         LocalDate targetMonth = null;
-        String targetMonthKey = null; 
+        String targetMonthKey = null;
         
         // monthParamが指定されている場合
         if (monthParam != null && !monthParam.isBlank()) {
@@ -127,7 +136,7 @@ public class LearningDataController {
         model.addAttribute("distinctMonths", allDistinctMonths);    
         model.addAttribute("selectedMonth", targetMonthKey);
         
-        // 追加: 日本語カテゴリー名マップを渡す
+        // 日本語カテゴリー名マップを渡す
         model.addAttribute("japaneseCategoriesMap", CATEGORY_NAMES_JA);
     
         boolean isArchive = true; 
@@ -512,58 +521,37 @@ public class LearningDataController {
             @AuthenticationPrincipal UserInfo loggedInUser,
             RedirectAttributes redirectAttributes) {
 
-        if (loggedInUser == null) {
-            return "redirect:/login?error";
-        }
+        if (loggedInUser == null) return "redirect:/login?error";
        
-        Long userId = loggedInUser.getId();
-        String redirectMonthParam = "";
+        String redirectMonthKey = "";
 
         try {
-            //  削除前にレコードを取得
+            // 削除前に月情報を特定しておく
             LearningRecord recordToDelete = learningDataService.getLearningRecordById(id);
-
-            if (recordToDelete == null) {
-                throw new IllegalArgumentException("ID: " + id + " の学習記録が見つかりません。");
+            if (recordToDelete != null && recordToDelete.getMonth() != null) {
+                redirectMonthKey = recordToDelete.getMonth().toString().substring(0, 7);
             }
-
-            String itemName = recordToDelete.getSubjectName();
-            LocalDate targetDate = recordToDelete.getMonth();
-            String currentMonthKey = targetDate.toString().substring(0, 7);
 
             // 記録を削除
             learningDataService.deleteLearningRecord(id);
 
-            // 削除後の該当月の残件数を確認
-            List<LearningRecord> remaining = learningDataService.findLearningRecordsByUserIdAndMonth(userId, targetDate);
-            
-            String finalRedirectMonth = currentMonthKey;
+            // 💡 修正ポイント: 
+            // 以前はこの後で「残件数」を確認してリダイレクト先を変えていましたが、
+            // そのロジックを削除しました。
+            // これにより、データが0件になっても元の月(?month=YYYY-MM)へリダイレクトされます。
 
-            // 該当月のデータが0件になった場合
-            if (remaining.isEmpty()) {
-                // DBにデータが存在する「最新の月」を取得
-                List<LocalDate> availableMonths = learningDataService.getDistinctMonthsByUserId(userId);
-                if (!availableMonths.isEmpty()) {
-                    // 新しいリダイレクト先（最新の月）を設定
-                    finalRedirectMonth = availableMonths.get(0).toString().substring(0, 7);
-                }
-            }
+            redirectAttributes.addFlashAttribute("successMessage", "項目を削除しました！");
 
-            // リダイレクトURLの構築
-            redirectMonthParam = "?month=" + finalRedirectMonth;
-
-            // 成功メッセージ
-            String successMessage = itemName + "を削除しました！";
-            redirectAttributes.addFlashAttribute("successMessage", successMessage);
-
-        } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("error", "削除エラー: " + e.getMessage());
-        } catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("error", "削除エラーが発生しました: " + e.getMessage());
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "予期せぬエラーが発生しました");
+            redirectAttributes.addFlashAttribute("error", "削除中にエラーが発生しました。");
         }
 
-        return "redirect:/learning/list" + redirectMonthParam;
+        // 常に削除したレコードが属していた月のページへ戻る
+        String redirectPath = "/learning/list";
+        if (!redirectMonthKey.isEmpty()) {
+            redirectPath += "?month=" + redirectMonthKey;
+        }
+
+        return "redirect:" + redirectPath;
     }
 }
