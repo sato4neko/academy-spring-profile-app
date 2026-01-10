@@ -32,9 +32,7 @@
   margin-bottom: 32px;
   line-break: anywhere;
 }
-.p-profile-app_top .link__btn--edit {
-  display: inline-block;
-}
+
 .p-profile-app_top .introduction_inner--l {
   display: flex;
   flex-direction: column;
@@ -64,4 +62,19 @@
 }
 .p-profile-app_top .chart_inner .title {
   margin-bottom: 40px;
+}
+.p-profile-app_top .link__btn--edit {
+  display: inline-block;
+  margin-bottom: 46px;
+}
+
+/*** 
+  chart
+***/
+.chart_container {
+  position: relative;
+  max-width: 960px;
+  width: 100%;
+  height: 480px;
+  margin: 0 auto;
 }

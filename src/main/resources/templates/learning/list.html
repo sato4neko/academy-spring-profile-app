@@ -27,18 +27,16 @@
         <!-- カテゴリーごとのループ  -->
         <div
           th:each="categoryEntry : ${entry.value}"
-          th:with="categoryRecords=${categoryEntry.value}"
+          th:with="categoryRecords=${categoryEntry.value}, categoryKey=${categoryEntry.key}"
         >
-          <!-- リストが空でなければ、最初のレコードを格納 -->
-          <div
-            th:if="${not #lists.isEmpty(categoryRecords)}"
-            th:with="firstRecord=${categoryRecords[0]}"
-          >
+          <!-- 修正: th:if="${not #lists.isEmpty(categoryRecords)}" を削除 -->
+          <div>
             <div class="learning-data mx-auto">
               <div class="head">
+                <!-- 修正: データがない場合でもタイトルを表示 -->
                 <h3
                   class="title"
-                  th:text="${firstRecord.getJapaneseCategoryName()}"
+                  th:text="${japaneseCategoriesMap.get(categoryKey)}"
                 ></h3>
                 <a
                   class="c-btn--md--item--add"
@@ -47,7 +45,12 @@
                   項目を追加する
                 </a>
               </div>
-              <div class="table-responsive max-h-rows">
+
+              <!-- 修正: データがある場合はテーブルを表示 -->
+              <div
+                class="table-responsive max-h-rows"
+                th:if="${not #lists.isEmpty(categoryRecords)}"
+              >
                 <table class="table-form">
                   <thead>
                     <tr class="t-head">
@@ -91,7 +94,7 @@
                               type="submit"
                               value="学習時間を保存する"
                             />
-                            <!--hiddun-->
+                            <!--hidden-->
                             <input
                               type="hidden"
                               name="id"
@@ -104,8 +107,8 @@
                             />
                             <input
                               type="hidden"
-                              name="currentMonthKey"
-                              th:value="${entry.key}"
+                              name="currentMonth"
+                              th:value="${selectedMonth}"
                             />
                           </td>
                         </form>
@@ -129,7 +132,7 @@
                           />
                           <input
                             type="hidden"
-                            name="currentMonthKey"
+                            name="currentMonth"
                             th:value="${selectedMonth}"
                           />
                         </form>
@@ -139,10 +142,16 @@
                   </tbody>
                 </table>
               </div>
-              <!--  -->
+
+              <!-- 追加:データがない場合のメッセージ -->
+              <div
+                class="zero-data-message"
+                th:if="${#lists.isEmpty(categoryRecords)}"
+              >
+                学習記録がありません。
+              </div>
             </div>
           </div>
-          <!-- リストが空でなければ、最初のレコードを格納 -->
         </div>
         <!-- カテゴリーごとのループ  -->
       </div>
@@ -242,6 +251,11 @@
         redirectButton.addEventListener("click", function (event) {
           let redirectUrl = LIST_PAGE_URL;
 
+          // 修正: URLのクエリパラメータから 'month' を取得して selectedMonth を定義
+          const urlParams = new URLSearchParams(window.location.search);
+          const selectedMonth = urlParams.get("month");
+
+          // selectedMonth が存在する場合のみパラメータを追加
           if (selectedMonth && selectedMonth !== "default-month") {
             redirectUrl += "?month=" + selectedMonth;
           }

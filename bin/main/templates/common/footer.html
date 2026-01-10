@@ -8,7 +8,7 @@
     xmlns:th="http://www.thymeleaf.org"
     th:fragment="footer"
     id="footer"
-    th:classappend="${learningDataArchive} ? 'is-learning-archive-page_footer'"
+    th:classappend="|${learningDataArchive ? 'is-learning-archive-page_footer ' : ''}${top_learning_Chart ? 'is-top-chart_footer' : ''}|"
   >
     <small>Portfolio site</small>
   </footer>

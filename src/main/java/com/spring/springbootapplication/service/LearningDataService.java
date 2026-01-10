@@ -4,7 +4,11 @@ import com.spring.springbootapplication.entity.LearningRecord;
 import com.spring.springbootapplication.repository.LearningRecordMapper;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -111,5 +115,25 @@ public class LearningDataService {
             throw new RuntimeException("Failed to delete learning record or record not found with ID: " + id);
         }
     }
-    
+
+    // グラフ表示用に、月ごとのカテゴリー別合計学習時間を集計する
+    public Map<String, Map<String, Integer>> getChartData(Long userId) {
+        // 1. まずそのユーザーの全レコードを取得
+        List<LearningRecord> allRecords = learningRecordMapper.findAllByUserId(userId);
+        
+        // 月を "2024-03" のような形式で扱うためのフォーマッター
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+
+        // 2. Stream APIを使って集計
+        // 結果の型: Map<"月", Map<"カテゴリー名", 合計時間>>
+        return allRecords.stream()
+            .collect(Collectors.groupingBy(
+                record -> record.getMonth().format(formatter), // 月でグループ化
+                TreeMap::new,                                  // 月順に並べる
+                Collectors.groupingBy(
+                    LearningRecord::getJapaneseCategoryName,   // 次に日本語カテゴリー名でグループ化
+                    Collectors.summingInt(LearningRecord::getLearningTime) // 学習時間を合計
+            )
+        ));
+    }
 }
